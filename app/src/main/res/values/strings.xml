@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Music Player</string>
+    <string name="github_project">music.player@github.com</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!--Navigation menu items-->
+    <string name="nav_search">Search</string>
+    <string name="nav_playlists">Playlists</string>
+    <string name="nav_albums">Albums</string>
+    <string name="nav_settings">Settings</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
