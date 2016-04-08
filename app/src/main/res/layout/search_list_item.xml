@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/list_item_padding_top"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/list_item_padding_bottom"
     android:paddingEnd="@dimen/list_item_padding_right"
     android:paddingStart="@dimen/list_item_padding_left"
-    android:paddingBottom="@dimen/list_item_padding_bottom">
+    android:paddingTop="@dimen/list_item_padding_top">
 
     <TextView
         android:id="@+id/title"
-        android:text="@string/item_default_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/item_default_title"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/artist"
-        android:textColor="?android:textColorSecondary"
-        android:text="@string/item_default_artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12sp" />
+        android:text="@string/item_default_artist"
+        android:textColor="?android:textColorSecondary"
+        android:textSize="12sp"
+        android:layout_below="@+id/title"
+        android:layout_alignParentStart="true" />
 
-</LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:src="@mipmap/ic_more_vert_white_36dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>
