@@ -1,18 +1,13 @@
 package com.enzab.spootify.fragment;
 
-import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.os.Bundle;
-import android.os.StrictMode;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.enzab.spootify.R;
 import com.squareup.picasso.Picasso;
@@ -22,10 +17,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class NowPlayingFragment extends Fragment {
-
-    static double PLAY_BUTTON_RATIO = 1.5;
-    static int playButtonWidth;
-    static int playButtonHeight;
 
     MediaPlayer music;
 
@@ -48,12 +39,6 @@ public class NowPlayingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        BitmapFactory.Options dimensions = new BitmapFactory.Options();
-        dimensions.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(getResources(), R.mipmap.ic_play_circle_outline_white_48dp, dimensions);
-        playButtonWidth = (int) (dimensions.outWidth * PLAY_BUTTON_RATIO);
-        playButtonHeight = (int) (dimensions.outHeight * PLAY_BUTTON_RATIO);
-
         music = MediaPlayer.create(getContext(), R.raw.strauss_also_sprach_zarathustra);
         music.setOnCompletionListener(soundCompletionListener);
     }
@@ -66,8 +51,13 @@ public class NowPlayingFragment extends Fragment {
         ButterKnife.bind(this, view);
         playButton.setTag(R.mipmap.ic_play_circle_outline_white_48dp);
 
-        Picasso.with(getContext()).load(R.drawable.cover1).into(albumCover);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Picasso.with(getContext()).load(R.drawable.cover1).placeholder(R.drawable.default_cover).noFade().into(albumCover);
     }
 
     @OnClick(R.id.play_button)
