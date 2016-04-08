@@ -12,10 +12,10 @@ public class PlaylistFragment extends SearchFragment {
 
     @Override
     protected List<SearchItem> getItemList() {
-        List<SearchItem> items = new ArrayList<>();
-        items.add(new SearchItem("Epic Playlist", "1"));
-        items.add(new SearchItem("Movie OST", "1"));
-        return items;
+        mItems = new ArrayList<>();
+        mItems.add(new SearchItem("Epic Playlist", "1"));
+        mItems.add(new SearchItem("Movie OST", "1"));
+        return mItems;
     }
 
 }

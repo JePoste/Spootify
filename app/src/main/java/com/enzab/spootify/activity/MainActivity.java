@@ -14,15 +14,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.enzab.spootify.R;
+import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
 import com.enzab.spootify.fragment.AlbumFragment;
 import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
+import com.enzab.spootify.model.SearchItem;
 
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMusicSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +35,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -85,5 +87,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onMusicSelected(SearchItem searchItem) {
+        Fragment fragment;
+        fragment = NowPlayingFragment.newInstance(searchItem);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
     }
 }

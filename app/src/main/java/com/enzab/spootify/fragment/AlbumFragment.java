@@ -12,10 +12,10 @@ public class AlbumFragment extends SearchFragment {
 
     @Override
     protected List<SearchItem> getItemList() {
-        List<SearchItem> items = new ArrayList<>();
-        items.add(new SearchItem("Prelude", "Richard Strauss"));
-        items.add(new SearchItem("Jurrassic park (the album)", "John Williams"));
-        return items;
+        mItems = new ArrayList<>();
+        mItems.add(new SearchItem("Prelude", "Richard Strauss"));
+        mItems.add(new SearchItem("Jurrassic park (the album)", "John Williams"));
+        return mItems;
     }
 
 

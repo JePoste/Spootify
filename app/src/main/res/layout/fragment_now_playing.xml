@@ -22,19 +22,20 @@
         android:padding="10sp">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Song title"
+            android:text="@string/now_playing_title"
             android:textSize="17sp" />
 
         <TextView
+            android:id="@+id/artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView2"
+            android:layout_below="@+id/title"
             android:layout_centerHorizontal="true"
-            android:text="Artist name"
+            android:text="@string/now_playing_artist"
             android:textColor="?android:textColorSecondary" />
 
         <ImageView

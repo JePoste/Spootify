@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.enzab.spootify.R;
+import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
 import com.enzab.spootify.adapter.SearchListAdapter;
 import com.enzab.spootify.model.SearchItem;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +30,7 @@ public class SearchFragment extends Fragment {
 
     private Context mContext;
     @Bind(R.id.list)
-    ListView mList;
+    ListView mListView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +40,7 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    protected List<SearchItem> mItems;
 
     /**
      * Use this factory method to create a new instance of
@@ -78,8 +81,25 @@ public class SearchFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         SearchListAdapter adapter = new SearchListAdapter(mContext, getItemList());
-        mList.setAdapter(adapter);
+        mListView.setAdapter(adapter);
         return view;
+    }
+
+    @OnItemClick(R.id.list)
+    void onItemClick(int position) {
+        try {
+            OnMusicSelectedListener activity = (OnMusicSelectedListener) mContext;
+            activity.onMusicSelected(mItems.get(position));
+        } catch (ClassCastException e) {
+            throw new ClassCastException(mContext.toString() + " must implement OnMusicSelectedListener");
+        }
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -95,9 +115,9 @@ public class SearchFragment extends Fragment {
     }
 
     protected List<SearchItem> getItemList() {
-        List<SearchItem> items = new ArrayList<>();
-        items.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
-        items.add(new SearchItem("Jurrassic park theme", "John Williams"));
-        return items;
+        mItems = new ArrayList<>();
+        mItems.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
+        mItems.add(new SearchItem("Jurrassic park theme", "John Williams"));
+        return mItems;
     }
 }

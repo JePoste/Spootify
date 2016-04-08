@@ -4,8 +4,8 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_search" android:icon="@mipmap/ic_search_black_36dp" android:checked="true"
             android:title="@string/nav_search" />
-        <item android:id="@+id/nav_now_playing" android:icon="@mipmap/ic_album_black_36dp"
-            android:title="@string/now_playing" />
+        <item android:id="@+id/nav_now_playing" android:icon="@mipmap/ic_music_note_black_36dp"
+            android:title="@string/nav_now_playing" />
         <item android:id="@+id/nav_playlists" android:icon="@mipmap/ic_library_music_black_36dp"
             android:title="@string/nav_playlists" />
         <item android:id="@+id/nav_albums" android:icon="@mipmap/ic_album_black_36dp"

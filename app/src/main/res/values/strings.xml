@@ -9,15 +9,16 @@
 
     <!--Navigation menu items-->
     <string name="nav_search">Search</string>
+    <string name="nav_now_playing">Now Playing</string>
     <string name="nav_playlists">Playlists</string>
     <string name="nav_albums">Albums</string>
     <string name="nav_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <!--List items-->
     <string name="item_default_title">Title</string>
     <string name="item_default_artist">Artist</string>
-    <string name="now_playing">Now Playing</string>
+
+    <!--NowPlayingFragment-->
+    <string name="now_playing_title">Song title</string>
+    <string name="now_playing_artist">Artist name</string>
 </resources>
