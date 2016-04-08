@@ -5,19 +5,22 @@
     android:paddingTop="@dimen/list_item_padding_top"
     android:paddingEnd="@dimen/list_item_padding_right"
     android:paddingStart="@dimen/list_item_padding_left"
-    android:paddingBottom="@dimen/list_item_padding_bottom">
+    android:paddingBottom="@dimen/list_item_padding_bottom"
+    android:background="@color/primary_dark">
 
     <TextView
         android:id="@+id/title"
         android:text="@string/item_default_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/artist"
+        android:textColor="?android:textColorSecondary"
         android:text="@string/item_default_artist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp" />
 
 </LinearLayout>

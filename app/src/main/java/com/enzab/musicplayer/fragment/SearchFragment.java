@@ -78,10 +78,7 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
 
-        List<SearchItem> items = new ArrayList<>();
-        items.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
-        items.add(new SearchItem("Jurrassic park theme", "John Williams"));
-        SearchListAdapter adapter = new SearchListAdapter(mContext, items);
+        SearchListAdapter adapter = new SearchListAdapter(mContext, getItemList());
         mList.setAdapter(adapter);
         return view;
     }
@@ -96,5 +93,12 @@ public class SearchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         this.mContext = null;
+    }
+
+    protected List<SearchItem> getItemList() {
+        List<SearchItem> items = new ArrayList<>();
+        items.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
+        items.add(new SearchItem("Jurrassic park theme", "John Williams"));
+        return items;
     }
 }
