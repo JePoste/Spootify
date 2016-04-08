@@ -19,4 +19,5 @@
     <!--List items-->
     <string name="item_default_title">Title</string>
     <string name="item_default_artist">Artist</string>
+    <string name="now_playing">Now Playing</string>
 </resources>

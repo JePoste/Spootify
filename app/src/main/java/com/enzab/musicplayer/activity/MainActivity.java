@@ -16,6 +16,7 @@ import android.view.MenuItem;
 
 import com.enzab.musicplayer.R;
 import com.enzab.musicplayer.fragment.AlbumFragment;
+import com.enzab.musicplayer.fragment.NowPlayingFragment;
 import com.enzab.musicplayer.fragment.PlaylistFragment;
 import com.enzab.musicplayer.fragment.SearchFragment;
 
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new PlaylistFragment();
         } else if (id == R.id.nav_albums) {
             fragment = new AlbumFragment();
+        } else if (id == R.id.nav_now_playing) {
+            fragment = new NowPlayingFragment();
         } else if (id == R.id.nav_settings) {
 
         }
