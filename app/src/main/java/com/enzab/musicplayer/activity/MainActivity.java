@@ -3,6 +3,7 @@ package com.enzab.musicplayer.activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,6 +15,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.enzab.musicplayer.R;
+import com.enzab.musicplayer.fragment.AlbumFragment;
+import com.enzab.musicplayer.fragment.PlaylistFragment;
+import com.enzab.musicplayer.fragment.SearchFragment;
+
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,6 +28,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new SearchFragment()).commit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -81,17 +89,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
 
         if (id == R.id.nav_search) {
-
+            fragment = new SearchFragment();
         } else if (id == R.id.nav_playlists) {
-
+            fragment = new PlaylistFragment();
         } else if (id == R.id.nav_albums) {
-
+            fragment = new AlbumFragment();
         } else if (id == R.id.nav_settings) {
 
         }
-
+        if (fragment != null)
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
