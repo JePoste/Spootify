@@ -62,17 +62,11 @@ public class NowPlayingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_now_playing, container, false);
+
         ButterKnife.bind(this, view);
-
         playButton.setTag(R.mipmap.ic_play_circle_outline_white_48dp);
-        Picasso.with(getContext()).load(R.mipmap.ic_play_circle_outline_white_48dp).resize(playButtonWidth, playButtonHeight).noFade().into(playButton);
-        Picasso.with(getContext()).load(R.drawable.cover1).into(albumCover);
-        Picasso.with(getContext()).load(R.mipmap.ic_more_vert_white_36dp).into(optionButton);
-        Picasso.with(getContext()).load(R.mipmap.ic_skip_previous_white_36dp).into(previousButton);
-        Picasso.with(getContext()).load(R.mipmap.ic_skip_next_white_36dp).into(nextButton);
-        Picasso.with(getContext()).load(R.mipmap.ic_shuffle_white_36dp).into(shuffleButton);
-        Picasso.with(getContext()).load(R.mipmap.ic_repeat_white_36dp).into(repeatButton);
 
+        Picasso.with(getContext()).load(R.drawable.cover1).into(albumCover);
         return view;
     }
 
@@ -80,12 +74,12 @@ public class NowPlayingFragment extends Fragment {
     public void playButtonPressed(View view) {
         if (String.valueOf(playButton.getTag()).equals(String.valueOf(R.mipmap.ic_play_circle_outline_white_48dp))) {
             music.start();
-            playButton.setTag(R.mipmap.ic_pause_circle_outline_white_36dp);
-            Picasso.with(getContext()).load(R.mipmap.ic_pause_circle_outline_white_36dp).resize(playButtonWidth, playButtonHeight).noFade().into(playButton);
+            playButton.setTag(R.mipmap.ic_pause_circle_outline_white_48dp);
+            playButton.setImageResource(R.mipmap.ic_pause_circle_outline_white_48dp);
         } else {
             music.pause();
             playButton.setTag(R.mipmap.ic_play_circle_outline_white_48dp);
-            Picasso.with(getContext()).load(R.mipmap.ic_play_circle_outline_white_48dp).resize(playButtonWidth, playButtonHeight).noFade().into(playButton);
+            playButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
         }
     }
 

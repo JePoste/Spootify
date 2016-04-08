@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,13 +8,16 @@
         android:id="@+id/album_cover"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/song_information_layout"
         android:adjustViewBounds="true"
         android:padding="5sp"
         android:scaleType="fitCenter" />
 
     <RelativeLayout
+        android:id="@+id/song_information_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/song_progress_layout"
         android:padding="10sp">
 
         <TextView
@@ -35,6 +38,7 @@
 
         <ImageView
             android:id="@+id/option_button"
+            android:src="@mipmap/ic_more_vert_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -42,8 +46,10 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/song_progress_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/media_button_layout"
         android:padding="10sp">
 
         <TextView
@@ -73,12 +79,15 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/media_button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:padding="10sp">
 
         <ImageView
             android:id="@+id/shuffle_button"
+            android:src="@mipmap/ic_shuffle_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -86,6 +95,7 @@
 
         <ImageView
             android:id="@+id/previous_button"
+            android:src="@mipmap/ic_skip_previous_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -93,13 +103,16 @@
 
         <ImageView
             android:id="@+id/play_button"
+            android:src="@mipmap/ic_play_circle_outline_white_48dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:layout_gravity="center_vertical"
-            android:layout_weight="2" />
+            android:layout_weight="1" />
 
         <ImageView
             android:id="@+id/next_button"
+            android:src="@mipmap/ic_skip_next_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -107,11 +120,11 @@
 
         <ImageView
             android:id="@+id/repeat_button"
+            android:src="@mipmap/ic_repeat_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1" />
-
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

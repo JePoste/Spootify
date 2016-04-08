@@ -1,3 +1,6 @@
+# Temp files
+*~
+
 # Built application files
 *.apk
 *.ap_
@@ -15,6 +18,9 @@ gen/
 # Gradle files
 .gradle/
 build/
+
+# DS_Store file of the death
+.DS_Store
 
 # Local configuration file (sdk path, etc)
 local.properties
