@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_search" android:icon="@mipmap/ic_search_black_36dp"
+        <item android:id="@+id/nav_search" android:icon="@mipmap/ic_search_black_36dp" android:checked="true"
             android:title="@string/nav_search" />
         <item android:id="@+id/nav_playlists" android:icon="@mipmap/ic_library_music_black_36dp"
             android:title="@string/nav_playlists" />
