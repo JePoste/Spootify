@@ -14,6 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.enzab.musicplayer.R;
+import com.enzab.musicplayer.fragment.SearchFragment;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -22,6 +26,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new SearchFragment()).commit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

@@ -1,13 +1,24 @@
 package com.enzab.musicplayer.fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.enzab.musicplayer.R;
+import com.enzab.musicplayer.adapter.SearchListAdapter;
+import com.enzab.musicplayer.model.SearchItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,6 +26,11 @@ import com.enzab.musicplayer.R;
  * create an instance of this fragment.
  */
 public class SearchFragment extends Fragment {
+
+    private Context mContext;
+    @Bind(R.id.list)
+    ListView mList;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -23,7 +39,6 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
 
     /**
      * Use this factory method to create a new instance of
@@ -60,8 +75,26 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        ButterKnife.bind(this, view);
+
+        List<SearchItem> items = new ArrayList<>();
+        items.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
+        items.add(new SearchItem("Jurrassic park theme", "John Williams"));
+        SearchListAdapter adapter = new SearchListAdapter(mContext, items);
+        mList.setAdapter(adapter);
+        return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.mContext = null;
+    }
 }
