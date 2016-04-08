@@ -1,18 +1,17 @@
-package com.enzab.musicplayer.fragment;
+package com.enzab.spootify.fragment;
 
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.enzab.musicplayer.R;
-import com.enzab.musicplayer.adapter.SearchListAdapter;
-import com.enzab.musicplayer.model.SearchItem;
+import com.enzab.spootify.R;
+import com.enzab.spootify.adapter.SearchListAdapter;
+import com.enzab.spootify.model.SearchItem;
 
 import java.util.ArrayList;
 import java.util.List;

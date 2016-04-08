@@ -1,6 +1,6 @@
-package com.enzab.musicplayer.fragment;
+package com.enzab.spootify.fragment;
 
-import com.enzab.musicplayer.model.SearchItem;
+import com.enzab.spootify.model.SearchItem;
 
 import java.util.ArrayList;
 import java.util.List;

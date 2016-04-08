@@ -1,4 +1,4 @@
-package com.enzab.musicplayer.fragment;
+package com.enzab.spootify.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.enzab.musicplayer.R;
+import com.enzab.spootify.R;
 
 public class NowPlayingFragment extends Fragment {
 

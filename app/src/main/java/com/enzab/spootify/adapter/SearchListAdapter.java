@@ -1,15 +1,14 @@
-package com.enzab.musicplayer.adapter;
+package com.enzab.spootify.adapter;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.enzab.musicplayer.R;
-import com.enzab.musicplayer.model.SearchItem;
+import com.enzab.spootify.R;
+import com.enzab.spootify.model.SearchItem;
 
 import java.util.List;
 

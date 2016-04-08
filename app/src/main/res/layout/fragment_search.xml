@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.enzab.musicplayer.fragment.SearchFragment">
+    tools:context="com.enzab.spootify.fragment.SearchFragment">
 
     <ListView
         android:id="@+id/list"

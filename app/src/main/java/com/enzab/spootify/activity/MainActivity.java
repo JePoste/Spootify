@@ -1,4 +1,4 @@
-package com.enzab.musicplayer.activity;
+package com.enzab.spootify.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,14 +11,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
-import com.enzab.musicplayer.R;
-import com.enzab.musicplayer.fragment.AlbumFragment;
-import com.enzab.musicplayer.fragment.NowPlayingFragment;
-import com.enzab.musicplayer.fragment.PlaylistFragment;
-import com.enzab.musicplayer.fragment.SearchFragment;
+import com.enzab.spootify.R;
+import com.enzab.spootify.fragment.AlbumFragment;
+import com.enzab.spootify.fragment.NowPlayingFragment;
+import com.enzab.spootify.fragment.PlaylistFragment;
+import com.enzab.spootify.fragment.SearchFragment;
 
 import butterknife.ButterKnife;
 

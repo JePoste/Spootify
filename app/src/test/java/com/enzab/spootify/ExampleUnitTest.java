@@ -1,4 +1,4 @@
-package com.enzab.musicplayer;
+package com.enzab.spootify;
 
 import org.junit.Test;
 

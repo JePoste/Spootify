@@ -1,4 +1,4 @@
-package com.enzab.musicplayer.model;
+package com.enzab.spootify.model;
 
 /**
  * Created by linard_f on 4/7/16.
