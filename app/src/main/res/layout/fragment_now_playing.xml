@@ -22,7 +22,7 @@
         android:padding="10sp">
 
         <TextView
-            android:id="@+id/title"
+            android:id="@+id/song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -33,7 +33,7 @@
             android:id="@+id/artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
+            android:layout_below="@+id/song_title"
             android:layout_centerHorizontal="true"
             android:text="@string/now_playing_artist"
             android:textColor="?android:textColorSecondary" />
@@ -55,28 +55,28 @@
         android:padding="10sp">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/song_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:text="0:05" />
+            android:text="00:00" />
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/song_progress_bar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/textView3"
-            android:layout_toStartOf="@+id/textView4" />
+            android:layout_toEndOf="@+id/song_progress"
+            android:layout_toStartOf="@+id/song_duration" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/song_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="4:40" />
+            android:text="00:00" />
 
     </RelativeLayout>
 
