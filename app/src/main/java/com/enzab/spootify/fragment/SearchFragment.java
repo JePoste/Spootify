@@ -2,7 +2,9 @@ package com.enzab.spootify.fragment;
 
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,8 +15,9 @@ import android.widget.ListView;
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
 import com.enzab.spootify.adapter.SearchListAdapter;
-import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.Song;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import butterknife.OnItemClick;
  */
 public class SearchFragment extends Fragment {
 
+    private static final String TAG = "SEARCH_FRAGMENT";
     private Context mContext;
     @Bind(R.id.list)
     ListView mListView;
@@ -41,7 +45,7 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    protected List<SearchItem> mItems;
+    protected List<Song> mItems;
 
     /**
      * Use this factory method to create a new instance of
@@ -72,6 +76,7 @@ public class SearchFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mItems = new ArrayList<>();
     }
 
     @Override
@@ -115,10 +120,19 @@ public class SearchFragment extends Fragment {
         this.mContext = null;
     }
 
-    protected List<SearchItem> getItemList() {
-        mItems = new ArrayList<>();
-        mItems.add(new SearchItem("Also sprach Zarathustra", "Richard Strauss"));
-        mItems.add(new SearchItem("Jurrassic park theme", "John Williams"));
+    protected List<Song> getItemList() {
+        File[] fileList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).listFiles();
+        if (fileList != null) {
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            for (File file : fileList) {
+                if (!file.isDirectory()) {
+                    mmr.setDataSource(file.getPath());
+                    mItems.add(new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
+                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                            file.getPath()));
+                }
+            }
+        }
         return mItems;
     }
 }

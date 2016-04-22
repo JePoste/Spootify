@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.Song;
 
 import java.util.List;
 
@@ -24,9 +25,9 @@ public class SearchListAdapter extends BaseAdapter {
 
     private Context context;
     private LayoutInflater inflater;
-    private List<SearchItem> items;
+    private List<Song> items;
 
-    public SearchListAdapter(Context context, List<SearchItem> items) {
+    public SearchListAdapter(Context context, List<Song> items) {
         this.context = context;
         this.items = items;
         inflater = LayoutInflater.from(this.context);
@@ -60,7 +61,7 @@ public class SearchListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        SearchItem item = items.get(position);
+        Song item = items.get(position);
         viewHolder.title.setText(item.getTitle());
         viewHolder.artist.setText(item.getArtist());
         return convertView;

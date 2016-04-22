@@ -1,11 +1,12 @@
 package com.enzab.spootify.activity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,11 +21,22 @@ import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
 import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.Song;
+import com.orm.SugarContext;
 
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMusicSelectedListener {
+
+    private static final String TAG = "MAIN_ACTIVITY";
+    private static final int REQUEST_READWRITE_STORAGE = 1;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SugarContext.terminate();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +64,35 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+//        SugarContext.init(this);
+////        List<Song> musics = (List<Song>) Song.find(Song.class, "artist=?", "Toto");
+//        List<Song> musics = Song.listAll(Song.class);
+//        for (Song music : musics) {
+//            Log.v(TAG, music.getTitle() + " " + music.getArtist());
+//        }
+        requestPermissionToUser();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_READWRITE_STORAGE) {
+            if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+
+            }
+        }
+    }
+
+    private boolean requestPermissionToUser() {
+        int readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (readPermission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READWRITE_STORAGE);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -90,7 +131,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMusicSelected(SearchItem searchItem) {
+    public void onMusicSelected(Song searchItem) {
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(searchItem);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();

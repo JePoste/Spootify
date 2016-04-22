@@ -1,13 +1,13 @@
 package com.enzab.spootify.fragment;
 
 import android.content.Context;
-import android.media.AudioManager;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.enzab.spootify.R;
-import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.Song;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -30,6 +30,7 @@ import butterknife.OnClick;
 public class NowPlayingFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
+    private static final String TAG = "NOW_PLAYING_FRAGMENT";
 
     @Bind(R.id.album_cover)
     ImageView mAlbumCover;
@@ -59,7 +60,7 @@ public class NowPlayingFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String MUSIC_ITEM = "music_item";
 
-    private SearchItem mMusicItem;
+    private Song mSong;
     private Context mContext;
     private Handler handler = new Handler();
     private Timer refreshTimer;
@@ -73,7 +74,7 @@ public class NowPlayingFragment extends Fragment {
      * @param musicItem Parameter 1.
      * @return A new instance of fragment SearchFragment.
      */
-    public static NowPlayingFragment newInstance(SearchItem musicItem) {
+    public static NowPlayingFragment newInstance(Song musicItem) {
         NowPlayingFragment fragment = new NowPlayingFragment();
         Bundle args = new Bundle();
         args.putSerializable(MUSIC_ITEM, musicItem);
@@ -89,12 +90,16 @@ public class NowPlayingFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mMusicItem = (SearchItem) getArguments().getSerializable(MUSIC_ITEM);
+            mSong = (Song) getArguments().getSerializable(MUSIC_ITEM);
         } else {
-            mMusicItem = null;
+            mSong = null;
         }
 
-        mMediaPlayer = MediaPlayer.create(mContext, R.raw.strauss_also_sprach_zarathustra);
+        if (mSong != null) {
+            mMediaPlayer = MediaPlayer.create(mContext, Uri.parse(mSong.getFilePath()));
+        } else {
+            mMediaPlayer = MediaPlayer.create(mContext, R.raw.strauss_also_sprach_zarathustra);
+        }
         mMediaPlayer.setOnCompletionListener(soundCompletionListener);
     }
 
@@ -104,9 +109,15 @@ public class NowPlayingFragment extends Fragment {
         ButterKnife.bind(this, view);
         mPlayButton.setTag("PAUSED");
 
-        if (mMusicItem != null) {
-            mSongTitle.setText(mMusicItem.getTitle());
-            mArtist.setText(mMusicItem.getArtist());
+        if (mSong != null) {
+            mSongTitle.setText(mSong.getTitle());
+            mArtist.setText(mSong.getArtist());
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(mSong.getFilePath());
+            byte[] picture = mmr.getEmbeddedPicture();
+            mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+        } else {
+            Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
         }
 
         mSongProgressBar.setMax(mMediaPlayer.getDuration());
@@ -125,8 +136,6 @@ public class NowPlayingFragment extends Fragment {
                 mSongProgress.setText(getTimeString(mMediaPlayer.getCurrentPosition()));
             }
         });
-
-        Picasso.with(mContext).load(R.drawable.cover1).placeholder(R.drawable.default_cover).noFade().into(mAlbumCover);
 
         return view;
     }
