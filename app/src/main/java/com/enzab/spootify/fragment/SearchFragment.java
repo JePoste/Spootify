@@ -6,7 +6,6 @@ import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import com.enzab.spootify.model.Song;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -133,6 +133,7 @@ public class SearchFragment extends Fragment {
                 }
             }
         }
+        Collections.sort(mItems, Song.songTitleComparator);
         return mItems;
     }
 }

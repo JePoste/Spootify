@@ -4,6 +4,7 @@ package com.enzab.spootify.model;
 import com.orm.SugarRecord;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Created by linard_f on 4/8/16.
@@ -26,6 +27,13 @@ public class Song extends SugarRecord implements Serializable {
         this.artist = artist;
         this.filePath = filePath;
     }
+
+    public static Comparator<Song> songTitleComparator = new Comparator<Song>() {
+        @Override
+        public int compare(Song lhs, Song rhs) {
+            return lhs.getTitle().toLowerCase().compareTo(rhs.getTitle().toLowerCase());
+        }
+    };
 
     public String getArtist() {
         return artist;
