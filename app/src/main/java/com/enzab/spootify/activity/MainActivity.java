@@ -1,8 +1,13 @@
 package com.enzab.spootify.activity;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -13,6 +18,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
@@ -20,8 +26,8 @@ import com.enzab.spootify.fragment.AlbumFragment;
 import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
-import com.enzab.spootify.model.SearchItem;
 import com.enzab.spootify.model.Song;
+import com.enzab.spootify.service.PlayerService;
 import com.orm.SugarContext;
 
 import butterknife.ButterKnife;
@@ -31,12 +37,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MAIN_ACTIVITY";
     private static final int REQUEST_READWRITE_STORAGE = 1;
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SugarContext.terminate();
-    }
+    private PlayerService mPlayerService;
+    private Intent mPlayIntent;
+    private boolean mIsBoundToPlayerService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,33 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (mPlayIntent == null) {
+            mPlayIntent = new Intent(this, PlayerService.class);
+            bindService(mPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            startService(mPlayIntent);
+        }
+    }
+
+    // connect to the service
+    private ServiceConnection musicConnection = new ServiceConnection(){
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
+            mPlayerService = binder.getService();
+//            mPlayerService.setList(songList); // PASS SONG LIST HERE
+            mIsBoundToPlayerService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsBoundToPlayerService = false;
+        }
+    };
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -135,5 +165,18 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(searchItem);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopService(mPlayIntent);
+        mPlayerService = null;
+        super.onDestroy();
+            SugarContext.terminate();
+        }
+
+    public void songPicked(View view){
+        mPlayerService.setSong(2); // put song path here
+        mPlayerService.playSong();
     }
 }

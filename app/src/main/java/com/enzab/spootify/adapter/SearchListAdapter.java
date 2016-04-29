@@ -8,7 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.enzab.spootify.R;
-import com.enzab.spootify.model.SearchItem;
 import com.enzab.spootify.model.Song;
 
 import java.util.List;

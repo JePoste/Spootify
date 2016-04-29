@@ -29,9 +29,6 @@ import butterknife.OnClick;
 
 public class NowPlayingFragment extends Fragment {
 
-    private MediaPlayer mMediaPlayer;
-    private static final String TAG = "NOW_PLAYING_FRAGMENT";
-
     @Bind(R.id.album_cover)
     ImageView mAlbumCover;
     @Bind(R.id.option_button)
@@ -60,11 +57,14 @@ public class NowPlayingFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String MUSIC_ITEM = "music_item";
 
+    private static final String TAG = "NOW_PLAYING_FRAGMENT";
     private Song mSong;
+    private MediaPlayer mMediaPlayer;
     private Context mContext;
-    private Handler handler = new Handler();
-    private Timer refreshTimer;
-    private TimerTask refreshSongProgressTimerTask;
+    private Handler mHandler = new Handler();
+    private Timer mRefreshTimer;
+    private TimerTask mRefreshSongProgressTimerTask;
+
 
 
     /**
@@ -143,10 +143,10 @@ public class NowPlayingFragment extends Fragment {
     @OnClick(R.id.play_button)
     public void playButtonPressed(View view) {
         if (mPlayButton.getTag().equals("PAUSED")) {
-            refreshSongProgressTimerTask = new TimerTask() {
+            mRefreshSongProgressTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    handler.post(new Runnable() {
+                    mHandler.post(new Runnable() {
                         public void run() {
                             mSongProgress.setText(getTimeString(mMediaPlayer.getCurrentPosition()));
                             mSongProgressBar.setProgress(mMediaPlayer.getCurrentPosition());
@@ -155,16 +155,16 @@ public class NowPlayingFragment extends Fragment {
                     });
                 }
             };
-            refreshTimer = new Timer();
-            refreshTimer.schedule(refreshSongProgressTimerTask, 0, 1000);
+            mRefreshTimer = new Timer();
+            mRefreshTimer.schedule(mRefreshSongProgressTimerTask, 0, 1000);
 
             mMediaPlayer.start();
             mPlayButton.setTag("PLAYING");
             mPlayButton.setImageResource(R.mipmap.ic_pause_circle_outline_white_48dp);
         } else {
             mMediaPlayer.pause();
-            refreshSongProgressTimerTask.cancel();
-            refreshTimer.purge();
+            mRefreshSongProgressTimerTask.cancel();
+            mRefreshTimer.purge();
             mPlayButton.setTag("PAUSED");
             mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
         }
