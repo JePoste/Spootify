@@ -8,21 +8,22 @@ import java.io.Serializable;
 public class SearchItem implements Serializable {
 
     private String title;
-    private String artist;
+    private String description
+            ;
 
     public SearchItem() {}
 
     public SearchItem(String title, String artist) {
         this.title = title;
-        this.artist = artist;
+        this.description = artist;
     }
 
-    public String getArtist() {
-        return artist;
+    public String getDescription() {
+        return description;
     }
 
-    public void setArtist(String artist) {
-        this.artist = artist;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {

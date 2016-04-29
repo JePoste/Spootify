@@ -1,6 +1,7 @@
-<resources>
+<resources>>
     <string name="app_name">Spootify</string>
     <string name="github_project">spootify@github.com</string>
+    <string name="empty"></string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -21,4 +22,8 @@
     <!--NowPlayingFragment-->
     <string name="now_playing_title">Song title</string>
     <string name="now_playing_artist">Artist name</string>
+
+    <!--Dialogs-->
+    <string name="dialog_create_playlist_title">Create playlist</string>
+    <string name="dialog_create_playlist_content">Playlist name</string>
 </resources>

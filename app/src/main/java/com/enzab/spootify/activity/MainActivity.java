@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SugarContext.terminate();
     }
 
     @Override
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity
 ////        List<Song> musics = (List<Song>) Song.find(Song.class, "artist=?", "Toto");
 //        List<Song> musics = Song.listAll(Song.class);
 //        for (Song music : musics) {
-//            Log.v(TAG, music.getTitle() + " " + music.getArtist());
+//            Log.v(TAG, music.getTitle() + " " + music.getDescription());
 //        }
         requestPermissionToUser();
     }

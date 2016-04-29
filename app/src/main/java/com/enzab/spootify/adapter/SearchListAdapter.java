@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.model.SearchItem;
-import com.enzab.spootify.model.Song;
 
 import java.util.List;
 
@@ -20,14 +19,14 @@ public class SearchListAdapter extends BaseAdapter {
 
     private static class ViewHolder {
         TextView title;
-        TextView artist;
+        TextView description;
     }
 
     private Context context;
     private LayoutInflater inflater;
-    private List<Song> items;
+    private List<SearchItem> items;
 
-    public SearchListAdapter(Context context, List<Song> items) {
+    public SearchListAdapter(Context context, List<SearchItem> items) {
         this.context = context;
         this.items = items;
         inflater = LayoutInflater.from(this.context);
@@ -55,15 +54,20 @@ public class SearchListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.search_list_item, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.title = (TextView) convertView.findViewById(R.id.title);
-            viewHolder.artist = (TextView) convertView.findViewById(R.id.artist);
+            viewHolder.description = (TextView) convertView.findViewById(R.id.description);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        Song item = items.get(position);
+        SearchItem item = items.get(position);
         viewHolder.title.setText(item.getTitle());
-        viewHolder.artist.setText(item.getArtist());
+        viewHolder.description.setText(item.getDescription());
         return convertView;
+    }
+
+    public void addItem(SearchItem item) {
+        items.add(item);
+        notifyDataSetChanged();
     }
 }
