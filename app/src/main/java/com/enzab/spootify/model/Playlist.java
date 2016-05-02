@@ -3,6 +3,7 @@ package com.enzab.spootify.model;
 import android.util.Log;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class Playlist extends SugarRecord implements Serializable {
 
+    @Unique
     private String name;
 
     public Playlist() {}

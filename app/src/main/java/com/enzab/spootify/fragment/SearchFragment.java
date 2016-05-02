@@ -2,22 +2,27 @@ package com.enzab.spootify.fragment;
 
 
 import android.content.Context;
+import android.database.sqlite.SQLiteException;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
 import com.enzab.spootify.adapter.SearchListAdapter;
-import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.ISearchItem;
+import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.Song;
-import com.orm.SugarContext;
+import com.enzab.spootify.model.SongPlaylist;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +38,7 @@ import butterknife.OnItemClick;
  * Use the {@link SearchFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements SearchListAdapter.IProcessItemOptionSelection {
 
     private static final String TAG = "SEARCH_FRAGMENT";
     protected Context mContext;
@@ -50,7 +55,7 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    protected List<Song> mItems;
+    protected List<ISearchItem> mItems;
     protected SearchListAdapter mAdapter;
 
     /**
@@ -83,7 +88,6 @@ public class SearchFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mItems = new ArrayList<>();
-        SugarContext.init(mContext);
     }
 
     @Override
@@ -93,7 +97,7 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
 
-        mAdapter = new SearchListAdapter(mContext, getItemList());
+        mAdapter = new SearchListAdapter(mContext, getItemList(), this);
         mListView.setAdapter(mAdapter);
         return view;
     }
@@ -102,7 +106,7 @@ public class SearchFragment extends Fragment {
     void onItemClick(int position) {
         try {
             OnMusicSelectedListener activity = (OnMusicSelectedListener) mContext;
-            activity.onMusicSelected(mItems.get(position));
+            activity.onMusicSelected((Song) mItems.get(position));
         } catch (ClassCastException e) {
             throw new ClassCastException(mContext.toString() + " must implement OnMusicSelectedListener");
         }
@@ -130,12 +134,10 @@ public class SearchFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        SugarContext.terminate();
     }
 
-    protected List<SearchItem> getItemList() {
+    protected List<ISearchItem> getItemList() {
         File[] fileList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).listFiles();
-        List<SearchItem> searchItems = new ArrayList<>();
         if (fileList != null) {
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             Song song;
@@ -145,15 +147,43 @@ public class SearchFragment extends Fragment {
                     song = new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                             mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
                             file.getPath());
-                    mItems.add(song);
-                    searchItems.add(new SearchItem(song.getTitle(), song.getArtist()));
-                    if (Song.find(Song.class, "file_path = ?", song.getFilePath()).size() == 0) {
+                    try {
+                        if (Song.find(Song.class, "file_path = ?", song.getFilePath()).size() == 0) {
+                            song.save();
+                        }
+                    } catch (SQLiteException e) {
                         song.save();
                     }
+                    mItems.add(song);
                 }
             }
         }
         Collections.sort(mItems, Song.songTitleComparator);
-        return searchItems;
+        return mItems;
+    }
+
+    @Override
+    public void onItemOptionSelection(final ISearchItem item, String option) {
+        if (mContext.getString(R.string.add_to_playlist).equals(option)) {
+            List<String> list = new ArrayList<>();
+            final List<Playlist> playlists = Playlist.listAll(Playlist.class);
+            for (Playlist playlist : playlists) {
+                list.add(playlist.getName());
+            }
+            new MaterialDialog.Builder(mContext)
+                    .title(R.string.dialog_add_to_playlist)
+                    .autoDismiss(true)
+                    .adapter(new ArrayAdapter(mContext, android.R.layout.simple_list_item_1, list),
+                            new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                    Playlist playlist = playlists.get(which);
+                                    SongPlaylist songPlaylist = new SongPlaylist(playlist.getId(), ((Song)item).getId());
+                                    songPlaylist.save();
+                                    dialog.dismiss();
+                                }
+                            })
+                    .show();
+        }
     }
 }

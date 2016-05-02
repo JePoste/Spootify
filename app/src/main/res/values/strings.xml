@@ -26,4 +26,13 @@
     <!--Dialogs-->
     <string name="dialog_create_playlist_title">Create playlist</string>
     <string name="dialog_create_playlist_content">Playlist name</string>
+
+    <!--Song options-->
+    <string name="add_to_playlist">Add to a playlist</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string-array name="song_options">
+        <item>@string/add_to_playlist</item>
+        <item>@string/add_to_queue</item>
+    </string-array>
+    <string name="dialog_add_to_playlist">Playlist</string>
 </resources>

@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
+import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.SearchItem;
 
@@ -44,9 +45,9 @@ public class PlaylistFragment extends SearchFragment {
     }
 
     @Override
-    protected List<SearchItem> getItemList() {
+    protected List<ISearchItem> getItemList() {
         List<Playlist> playlists = Playlist.listAll(Playlist.class);
-        List<SearchItem> songs = new ArrayList<>();
+        List<ISearchItem> songs = new ArrayList<>();
         for (Playlist playlist : playlists) {
             songs.add(new SearchItem(playlist.getName(), String.valueOf(playlist.getSongs().size())));
         }

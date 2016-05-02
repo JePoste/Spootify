@@ -9,7 +9,7 @@ import java.util.Comparator;
 /**
  * Created by linard_f on 4/8/16.
  */
-public class Song extends SugarRecord implements Serializable {
+public class Song extends SugarRecord implements Serializable, ISearchItem {
 
     private String artist;
     private String title;
@@ -28,9 +28,9 @@ public class Song extends SugarRecord implements Serializable {
         this.filePath = filePath;
     }
 
-    public static Comparator<Song> songTitleComparator = new Comparator<Song>() {
+    public static Comparator<ISearchItem> songTitleComparator = new Comparator<ISearchItem>() {
         @Override
-        public int compare(Song lhs, Song rhs) {
+        public int compare(ISearchItem lhs, ISearchItem rhs) {
             return lhs.getTitle().toLowerCase().compareTo(rhs.getTitle().toLowerCase());
         }
     };
@@ -45,6 +45,11 @@ public class Song extends SugarRecord implements Serializable {
 
     public String getTitle() {
         return title;
+    }
+
+    @Override
+    public String getDescription() {
+        return artist;
     }
 
     public void setTitle(String title) {
