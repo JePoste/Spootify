@@ -25,7 +25,6 @@ public class Playlist extends SugarRecord implements Serializable {
 
     public List<Song> getSongs() {
         List<SongPlaylist> songPlaylists = SongPlaylist.find(SongPlaylist.class, "playlist_id = ?", String.valueOf(getId()));
-        Log.v("PLAYLIST", String.valueOf(songPlaylists.size()));
         List<Song> songs = new ArrayList<>();
         for (SongPlaylist songPlaylist : songPlaylists) {
             songs.add(Song.findById(Song.class, songPlaylist.getSongId()));

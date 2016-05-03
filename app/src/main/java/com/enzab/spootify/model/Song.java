@@ -2,6 +2,7 @@ package com.enzab.spootify.model;
 
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Unique;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ public class Song extends SugarRecord implements Serializable, ISearchItem {
 
     private String artist;
     private String title;
+    @Unique
     private String filePath;
 
     public Song() {}

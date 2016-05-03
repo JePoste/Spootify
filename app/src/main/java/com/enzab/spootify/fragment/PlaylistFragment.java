@@ -1,6 +1,7 @@
 package com.enzab.spootify.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.InputType;
 import android.view.View;
 
@@ -9,6 +10,8 @@ import com.enzab.spootify.R;
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.SearchItem;
+
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +40,15 @@ public class PlaylistFragment extends SearchFragment {
                 .input(R.string.dialog_create_playlist_content, R.string.empty, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-                        Playlist playlist = new Playlist(input.toString());
-                        playlist.save();
-                        mAdapter.addItem(new SearchItem(playlist.getName(), "0"));
+                        Playlist playlist = new Playlist(input.toString().toLowerCase().trim());
+                        if (Playlist.find(Playlist.class, "name = ?", playlist.getName()).isEmpty()) {
+                            playlist.save();
+                            mAdapter.addItem(new SearchItem(playlist.getName(), "0"));
+                        } else {
+                            Snackbar.make(mSearchLayout, "The playlist \"" +
+                                    WordUtils.capitalize(playlist.getName()) +
+                                    "\" already exists.", Snackbar.LENGTH_LONG).show();
+                        }
                     }
                 }).show();
     }

@@ -13,6 +13,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
 import com.enzab.spootify.model.ISearchItem;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.util.List;
 
 /**
@@ -22,6 +24,7 @@ public class SearchListAdapter extends BaseAdapter {
 
     public interface IProcessItemOptionSelection {
         void onItemOptionSelection(ISearchItem item, String option);
+        String[] getOptionList();
     }
 
     private static class ViewHolder {
@@ -72,15 +75,14 @@ public class SearchListAdapter extends BaseAdapter {
         }
 
         final ISearchItem item = items.get(position);
-        viewHolder.title.setText(item.getTitle());
-        viewHolder.description.setText(item.getDescription());
+        viewHolder.title.setText(WordUtils.capitalize(item.getTitle()));
+        viewHolder.description.setText(WordUtils.capitalize(item.getDescription()));
         viewHolder.options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(context)
                         .autoDismiss(true)
-                        .adapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1,
-                                        context.getResources().getStringArray(R.array.song_options)),
+                        .adapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, callBack.getOptionList()),
                                 new MaterialDialog.ListCallback() {
                                     @Override
                                     public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {

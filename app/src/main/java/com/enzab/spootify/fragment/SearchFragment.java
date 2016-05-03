@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -46,6 +46,8 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
     ListView mListView;
     @Bind(R.id.fab)
     FloatingActionButton mFab;
+    @Bind(R.id.search_layout)
+    FrameLayout mSearchLayout;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -144,8 +146,8 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
             for (File file : fileList) {
                 if (!file.isDirectory()) {
                     mmr.setDataSource(file.getPath());
-                    song = new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
-                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),
+                    song = new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toLowerCase().trim(),
+                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toLowerCase().trim(),
                             file.getPath());
                     try {
                         if (Song.find(Song.class, "file_path = ?", song.getFilePath()).size() == 0) {
@@ -185,5 +187,10 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
                             })
                     .show();
         }
+    }
+
+    @Override
+    public String[] getOptionList() {
+        return mContext.getResources().getStringArray(R.array.song_options);
     }
 }
