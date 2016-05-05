@@ -1,6 +1,7 @@
 package com.enzab.spootify.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,11 @@ public class SearchListAdapter extends BaseAdapter {
 
     public void addItem(ISearchItem item) {
         items.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void deleteItem(ISearchItem item) {
+        items.remove(item);
         notifyDataSetChanged();
     }
 

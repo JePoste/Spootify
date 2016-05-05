@@ -26,6 +26,7 @@
     <!--Dialogs-->
     <string name="dialog_create_playlist_title">Create playlist</string>
     <string name="dialog_create_playlist_content">Playlist name</string>
+    <string name="dialog_add_to_playlist">Playlist</string>
 
     <!--Song options-->
     <string name="add_to_playlist">Add to a playlist</string>
@@ -34,5 +35,20 @@
         <item>@string/add_to_playlist</item>
         <item>@string/add_to_queue</item>
     </string-array>
-    <string name="dialog_add_to_playlist">Playlist</string>
+
+    <!--Playlist options-->
+    <string name="delete_playlist">Delete this playlist</string>
+    <string name="play_playlist">Play</string>
+    <string-array name="playlist_options">
+        <item>@string/delete_playlist</item>
+        <item>@string/play_playlist</item>
+    </string-array>
+
+    <!--PlaylistEdition options-->
+    <string name="delete_from_playlist">Delete from playlist</string>
+    <string-array name="playlist_edition_options">
+        <item>@string/add_to_playlist</item>
+        <item>@string/delete_from_playlist</item>
+    </string-array>
+
 </resources>

@@ -2,14 +2,18 @@ package com.enzab.spootify.fragment;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
+import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.SongPlaylist;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 
 /**
  * Created by linard_f on 4/7/16.
@@ -29,6 +34,16 @@ public class PlaylistFragment extends SearchFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mFab.setVisibility(View.VISIBLE);
+    }
+
+    @OnItemClick(R.id.list)
+    void onItemClick(int position) {
+        try {
+            OnMusicSelectedListener activity = (OnMusicSelectedListener) mContext;
+            activity.onPlaylistSelected((Playlist) mItems.get(position));
+        } catch (ClassCastException e) {
+            throw new ClassCastException(mContext.toString() + " must implement OnMusicSelectedListener");
+        }
     }
 
     @OnClick(R.id.fab)
@@ -44,6 +59,8 @@ public class PlaylistFragment extends SearchFragment {
                         if (Playlist.find(Playlist.class, "name = ?", playlist.getName()).isEmpty()) {
                             playlist.save();
                             mAdapter.addItem(new SearchItem(playlist.getName(), "0"));
+                            Snackbar.make(mSearchLayout, WordUtils.capitalize(playlist.getTitle()) +
+                                    " created.", Snackbar.LENGTH_LONG).show();
                         } else {
                             Snackbar.make(mSearchLayout, "The playlist \"" +
                                     WordUtils.capitalize(playlist.getName()) +
@@ -56,11 +73,31 @@ public class PlaylistFragment extends SearchFragment {
     @Override
     protected List<ISearchItem> getItemList() {
         List<Playlist> playlists = Playlist.listAll(Playlist.class);
-        List<ISearchItem> songs = new ArrayList<>();
+        List<ISearchItem> searchItems = new ArrayList<>();
         for (Playlist playlist : playlists) {
-            songs.add(new SearchItem(playlist.getName(), String.valueOf(playlist.getSongs().size())));
+            searchItems.add(playlist);
         }
-        return songs;
+        mItems = searchItems;
+        return searchItems;
     }
 
+    @Override
+    public void onItemOptionSelection(ISearchItem item, String option) {
+        Playlist playlist = (Playlist) item;
+        if (mContext.getString(R.string.delete_playlist).equals(option)) {
+            List<SongPlaylist> list = SongPlaylist.find(SongPlaylist.class, "playlist_id = ?", String.valueOf(playlist.getId()));
+            for (SongPlaylist it : list) {
+                it.delete();
+            }
+            mAdapter.deleteItem(item);
+            Playlist.delete((Playlist) Playlist.find(Playlist.class, "name = ?", item.getTitle()).get(0));
+            Snackbar.make(mSearchLayout, WordUtils.capitalize(item.getTitle()) +
+                    " deleted.", Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public String[] getOptionList() {
+        return mContext.getResources().getStringArray(R.array.playlist_options);
+    }
 }

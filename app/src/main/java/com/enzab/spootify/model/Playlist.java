@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by linard_f on 4/29/16.
  */
-public class Playlist extends SugarRecord implements Serializable {
+public class Playlist extends SugarRecord implements Serializable, ISearchItem {
 
     @Unique
     private String name;
@@ -39,4 +39,15 @@ public class Playlist extends SugarRecord implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String getTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getDescription() {
+        return String.valueOf(getSongs().size());
+    }
+
 }
