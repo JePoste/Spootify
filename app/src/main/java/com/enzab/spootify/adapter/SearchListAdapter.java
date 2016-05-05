@@ -16,6 +16,7 @@ import com.enzab.spootify.model.ISearchItem;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,10 +39,12 @@ public class SearchListAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
     private List<ISearchItem> items;
+    private final List<ISearchItem> itemsCopy;
 
     public SearchListAdapter(Context context, List<ISearchItem> items, IProcessItemOptionSelection callback) {
         this.context = context;
         this.items = items;
+        this.itemsCopy = new ArrayList<>(items);
         this.callBack = callback;
         inflater = LayoutInflater.from(this.context);
     }
@@ -97,13 +100,29 @@ public class SearchListAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public void filter(String filter) {
+        items.clear();
+        if (filter.isEmpty()) {
+            items.addAll(itemsCopy);
+        } else {
+            for (ISearchItem it : itemsCopy) {
+                if (it.getTitle().contains(filter.toLowerCase())) {
+                    items.add(it);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     public void addItem(ISearchItem item) {
         items.add(item);
+        itemsCopy.add(item);
         notifyDataSetChanged();
     }
 
     public void deleteItem(ISearchItem item) {
         items.remove(item);
+        itemsCopy.remove(item);
         notifyDataSetChanged();
     }
 
