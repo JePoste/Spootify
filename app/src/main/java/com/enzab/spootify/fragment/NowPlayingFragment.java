@@ -3,11 +3,10 @@ package com.enzab.spootify.fragment;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.model.Song;
+import com.enzab.spootify.service.PlayerService;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -58,14 +58,11 @@ public class NowPlayingFragment extends Fragment {
     private static final String MUSIC_ITEM = "music_item";
 
     private static final String TAG = "NOW_PLAYING_FRAGMENT";
-    private Song mSong;
-    private MediaPlayer mMediaPlayer;
     private Context mContext;
     private Handler mHandler = new Handler();
     private Timer mRefreshTimer;
     private TimerTask mRefreshSongProgressTimerTask;
-
-
+    private PlayerService mPlayerService;
 
     /**
      * Use this factory method to create a new instance of
@@ -89,94 +86,88 @@ public class NowPlayingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mPlayerService = PlayerService.getInstance();
         if (getArguments() != null) {
-            mSong = (Song) getArguments().getSerializable(MUSIC_ITEM);
+            Song selectedSong;
+            selectedSong = (Song) getArguments().getSerializable(MUSIC_ITEM);
+            if (selectedSong != null)
+                mPlayerService.setSong(selectedSong);
         } else {
-            mSong = null;
+            if (mPlayerService.isPlaying())
+                return; // re-bind le service à la vue
         }
-
-        if (mSong != null) {
-            mMediaPlayer = MediaPlayer.create(mContext, Uri.parse(mSong.getFilePath()));
-        } else {
-            mMediaPlayer = MediaPlayer.create(mContext, R.raw.strauss_also_sprach_zarathustra);
-        }
-        mMediaPlayer.setOnCompletionListener(soundCompletionListener);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_now_playing, container, false);
         ButterKnife.bind(this, view);
-        mPlayButton.setTag("PAUSED");
 
-        if (mSong != null) {
-            mSongTitle.setText(mSong.getTitle());
-            mArtist.setText(mSong.getArtist());
+        Song currentSong = mPlayerService.getSong();
+        if (currentSong != null) {
+            mPlayButton.setTag("STOPPED");
+
+            mSongTitle.setText(currentSong.getTitle());
+            mArtist.setText(currentSong.getArtist());
+
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(mSong.getFilePath());
+            mmr.setDataSource(currentSong.getFilePath());
             byte[] picture = mmr.getEmbeddedPicture();
             mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+
+            mSongProgressBar.setMax(mPlayerService.getDuration());
+            mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
+            mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int progress = seekBar.getProgress();
+                    mPlayerService.seekTo(progress);
+                    mSongProgress.setText(getTimeString(progress));
+                }
+            });
+
+            playButtonPressed(view);
         } else {
             Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
         }
-
-        mSongProgressBar.setMax(mMediaPlayer.getDuration());
-        mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                mMediaPlayer.seekTo(mSongProgressBar.getProgress());
-                mSongProgress.setText(getTimeString(mMediaPlayer.getCurrentPosition()));
-            }
-        });
-
         return view;
     }
 
     @OnClick(R.id.play_button)
     public void playButtonPressed(View view) {
-        if (mPlayButton.getTag().equals("PAUSED")) {
+        if (mPlayButton.getTag().equals("PLAYING")) {
+            mPlayerService.pauseSong();
+            mRefreshSongProgressTimerTask.cancel();
+            mRefreshTimer.purge();
+            mPlayButton.setTag("PAUSED");
+            mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
+        } else if (mPlayButton.getTag().equals("PAUSED") || mPlayButton.getTag().equals("STOPPED")) {
+            mPlayerService.playSong();
             mRefreshSongProgressTimerTask = new TimerTask() {
                 @Override
                 public void run() {
                     mHandler.post(new Runnable() {
                         public void run() {
-                            mSongProgress.setText(getTimeString(mMediaPlayer.getCurrentPosition()));
-                            mSongProgressBar.setProgress(mMediaPlayer.getCurrentPosition());
-                            mSongDuration.setText(getTimeString(mMediaPlayer.getDuration()));
+                            mSongProgress.setText(getTimeString(mPlayerService.getCurrentPosition()));
+                            mSongProgressBar.setProgress(mPlayerService.getCurrentPosition());
                         }
                     });
                 }
             };
             mRefreshTimer = new Timer();
             mRefreshTimer.schedule(mRefreshSongProgressTimerTask, 0, 1000);
-
-            mMediaPlayer.start();
             mPlayButton.setTag("PLAYING");
             mPlayButton.setImageResource(R.mipmap.ic_pause_circle_outline_white_48dp);
-        } else {
-            mMediaPlayer.pause();
-            mRefreshSongProgressTimerTask.cancel();
-            mRefreshTimer.purge();
-            mPlayButton.setTag("PAUSED");
-            mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
         }
     }
-
-    MediaPlayer.OnCompletionListener soundCompletionListener = new MediaPlayer.OnCompletionListener() {
-        public void onCompletion(MediaPlayer mediaPlayer) {
-            mediaPlayer.seekTo(0);
-            mPlayButton.setTag("PAUSED");
-            mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
-        }
-    };
 
     private String getTimeString(long millis) {
         int minutes = (int) ((millis % (1000 * 60 * 60)) / (1000 * 60));
@@ -194,5 +185,7 @@ public class NowPlayingFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         this.mContext = null;
+        mRefreshSongProgressTimerTask.cancel();
+        mRefreshTimer.purge();
     }
 }

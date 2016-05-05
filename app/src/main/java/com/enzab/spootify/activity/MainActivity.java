@@ -18,7 +18,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
@@ -104,17 +103,27 @@ public class MainActivity extends AppCompatActivity
 
         if (mPlayIntent == null) {
             mPlayIntent = new Intent(this, PlayerService.class);
-            bindService(mPlayIntent, musicConnection, Context.BIND_AUTO_CREATE);
             startService(mPlayIntent);
+            bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
+    @Override
+    protected void onDestroy() {
+//        stopService(mPlayIntent);
+        unbindService(mMusicConnection);
+        mPlayerService = null;
+        super.onDestroy();
+        SugarContext.terminate();
+    }
+
     // connect to the service
-    private ServiceConnection musicConnection = new ServiceConnection(){
+    private ServiceConnection mMusicConnection = new ServiceConnection(){
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
             mPlayerService = binder.getService();
+            PlayerService.initialize(binder);
 //            mPlayerService.setList(songList); // PASS SONG LIST HERE
             mIsBoundToPlayerService = true;
         }
@@ -165,18 +174,7 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(searchItem);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+        mPlayerService.setSong(searchItem); // put song path here
     }
 
-    @Override
-    protected void onDestroy() {
-        stopService(mPlayIntent);
-        mPlayerService = null;
-        super.onDestroy();
-            SugarContext.terminate();
-        }
-
-    public void songPicked(View view){
-        mPlayerService.setSong(2); // put song path here
-        mPlayerService.playSong();
-    }
 }
