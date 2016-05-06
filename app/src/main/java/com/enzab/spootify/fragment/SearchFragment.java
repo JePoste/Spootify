@@ -45,7 +45,7 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    protected List<Song> mItems;
+    protected ArrayList<Song> mItems;
 
     /**
      * Use this factory method to create a new instance of
@@ -95,7 +95,7 @@ public class SearchFragment extends Fragment {
     void onItemClick(int position) {
         try {
             OnMusicSelectedListener activity = (OnMusicSelectedListener) mContext;
-            activity.onMusicSelected(mItems.get(position));
+            activity.onMusicSelected(mItems, position);
         } catch (ClassCastException e) {
             throw new ClassCastException(mContext.toString() + " must implement OnMusicSelectedListener");
         }
