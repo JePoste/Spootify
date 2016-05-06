@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         SugarContext.init(this);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new SearchFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new NowPlayingFragment()).commit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(songList);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+        getSupportActionBar().setTitle(WordUtils.capitalize("Spootify"));
 //        mPlayerService.setSong(songList.get(1)); // put song path here
     }
 
