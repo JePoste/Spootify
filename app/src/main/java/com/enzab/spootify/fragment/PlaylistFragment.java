@@ -56,7 +56,7 @@ public class PlaylistFragment extends SearchFragment {
                         Playlist playlist = new Playlist(input.toString().toLowerCase().trim());
                         if (Playlist.find(Playlist.class, "name = ?", playlist.getName()).isEmpty()) {
                             playlist.save();
-                            mAdapter.addItem(new SearchItem(playlist.getName(), "0"));
+                            mAdapter.addItem(new Playlist(playlist.getName()));
                             Snackbar.make(mSearchLayout, WordUtils.capitalize(playlist.getTitle()) +
                                     " created.", Snackbar.LENGTH_LONG).show();
                         } else {

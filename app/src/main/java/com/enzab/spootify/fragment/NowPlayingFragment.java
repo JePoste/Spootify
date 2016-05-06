@@ -22,6 +22,8 @@ import com.enzab.spootify.service.PlayerService;
 import com.enzab.spootify.service.interaction.OnCompletionViewListener;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Timer;
@@ -37,10 +39,12 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     ImageView mAlbumCover;
     @Bind(R.id.option_button)
     ImageView mOptionButton;
-    @Bind(R.id.play_button)
-    ImageView mPlayButton;
+    @Bind(R.id.repeat_button)
+    ImageView mRepeatButton;
     @Bind(R.id.shuffle_button)
     ImageView mShuffleButton;
+    @Bind(R.id.play_button)
+    ImageView mPlayButton;
     @Bind(R.id.song_title)
     TextView mSongTitle;
     @Bind(R.id.artist)
@@ -160,13 +164,33 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
         if (song != null) {
             mPlayButton.setTag("PAUSED");
 
-            mSongTitle.setText(song.getTitle());
-            mArtist.setText(song.getArtist());
+            mSongTitle.setText(WordUtils.capitalize(song.getTitle()));
+            mArtist.setText(WordUtils.capitalize(song.getArtist()));
+
+            //RepeatButton init
+            if (mPlayerService.isRepeatMode()) {
+                mRepeatButton.setTag("REPEAT");
+                mRepeatButton.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.MULTIPLY);
+            } else {
+                mRepeatButton.setTag("NORMAL");
+                mRepeatButton.setColorFilter(null);
+            }
+            //ShuffleButton init
+            if (mPlayerService.isShuffleMode()) {
+                mShuffleButton.setTag("SHUFFLE");
+                mShuffleButton.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.MULTIPLY);
+            } else {
+                mShuffleButton.setTag("NORMAL");
+                mShuffleButton.setColorFilter(null);
+            }
 
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(song.getFilePath());
             byte[] picture = mmr.getEmbeddedPicture();
-            mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+            if (picture != null)
+                mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+            else
+                Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
 
             mSongProgressBar.setMax(mPlayerService.getDuration());
             mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
@@ -219,6 +243,20 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
             view.setTag("REPEAT");
             img.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.MULTIPLY);
             mPlayerService.setRepeatMode(true);
+        }
+    }
+
+    @OnClick(R.id.shuffle_button)
+    void onShuffleButtonClicked(View view) {
+        ImageView img = (ImageView) view;
+        if ("SHUFFLE".equals(view.getTag())) {
+            view.setTag("NORMAL");
+            mPlayerService.setShuffleMode(false);
+            img.setColorFilter(null);
+        } else {
+            view.setTag("SHUFFLE");
+            img.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.MULTIPLY);
+            mPlayerService.setShuffleMode(true);
         }
     }
 

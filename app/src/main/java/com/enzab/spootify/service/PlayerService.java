@@ -15,6 +15,8 @@ import com.enzab.spootify.service.interaction.OnCompletionViewListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -26,9 +28,12 @@ public class PlayerService extends Service implements
     private static PlayerService mPlayerService;
     private Song mSong;
     private ArrayList<Song> mSongQueue;
+    private ArrayList<Song> mShuffleSongQueue;
     private int mSongPlayingPosition;
+    private int mTmpSongPlayingPosition;
     private OnCompletionViewListener mOnCompletionViewListener;
     private boolean mRepeatMode = false;
+    private boolean mShuffleMode = false;
 
     public static PlayerService getInstance() {
         return mPlayerService;
@@ -57,6 +62,28 @@ public class PlayerService extends Service implements
 
     public void setRepeatMode(boolean repeatMode) {
         this.mRepeatMode = repeatMode;
+    }
+
+    public boolean isRepeatMode() {
+        return mRepeatMode;
+    }
+
+    public void setShuffleMode(boolean shuffleMode) {
+        this.mShuffleMode = shuffleMode;
+        if (shuffleMode) {
+            mShuffleSongQueue = new ArrayList<>(mSongQueue);
+            mShuffleSongQueue.remove(mSongPlayingPosition);
+            Collections.shuffle(mShuffleSongQueue, new Random(System.nanoTime()));
+            mShuffleSongQueue.add(0, mSong);
+            mTmpSongPlayingPosition = mSongPlayingPosition;
+            mSongPlayingPosition = 0;
+        } else {
+            mSongPlayingPosition = mTmpSongPlayingPosition ;
+        }
+    }
+
+    public boolean isShuffleMode() {
+        return mShuffleMode;
     }
 
     public void previous() {
@@ -102,7 +129,9 @@ public class PlayerService extends Service implements
     }
 
     private void setCurrentSongToMediaPlayer() {
-        mSong = mSongQueue.get(mSongPlayingPosition);
+        ArrayList<Song> list;
+        list = new ArrayList<>(mShuffleMode ? mShuffleSongQueue : mSongQueue);
+        mSong = list.get(mSongPlayingPosition);
         if (mMediaPlayer.isPlaying())
             mMediaPlayer.stop();
         mMediaPlayer.reset();

@@ -1,7 +1,5 @@
 package com.enzab.spootify.model;
 
-import android.util.Log;
-
 import com.orm.SugarRecord;
 import com.orm.dsl.Unique;
 
