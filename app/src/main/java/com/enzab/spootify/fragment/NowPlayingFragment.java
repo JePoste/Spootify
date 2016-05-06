@@ -6,7 +6,6 @@ import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +17,10 @@ import com.enzab.spootify.R;
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
-import com.orm.util.Collection;
+import com.enzab.spootify.service.interaction.OnCompletionViewListener;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,7 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class NowPlayingFragment extends Fragment {
+public class NowPlayingFragment extends Fragment implements OnCompletionViewListener {
 
     @Bind(R.id.album_cover)
     ImageView mAlbumCover;
@@ -92,6 +89,7 @@ public class NowPlayingFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mPlayerService = PlayerService.getInstance();
+        mPlayerService.setOnCompletionViewListener(this);
         if (getArguments() != null) {
             ArrayList<Song> songQueue;
             songQueue = (ArrayList<Song>) getArguments().getSerializable(SONG_QUEUE);
@@ -105,43 +103,12 @@ public class NowPlayingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_now_playing, container, false);
         ButterKnife.bind(this, view);
-
-        Song currentSong = mPlayerService.getSong();
-        if (currentSong != null) {
-            mPlayButton.setTag("STOPPED");
-
-            mSongTitle.setText(currentSong.getTitle());
-            mArtist.setText(currentSong.getArtist());
-
-            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(currentSong.getFilePath());
-            byte[] picture = mmr.getEmbeddedPicture();
-            mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
-
-            mSongProgressBar.setMax(mPlayerService.getDuration());
-            mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
-            mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    int progress = seekBar.getProgress();
-                    mPlayerService.seekTo(progress);
-                    mSongProgress.setText(getTimeString(progress));
-                }
-            });
-
-            playButtonPressed(view);
-        } else {
-            Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
-        }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        updateView(mPlayerService.getSong());
     }
 
     @OnClick(R.id.play_button)
@@ -191,4 +158,43 @@ public class NowPlayingFragment extends Fragment {
         mRefreshSongProgressTimerTask.cancel();
         mRefreshTimer.purge();
     }
+
+    @Override
+    public void updateView(Song song) {
+        if (song != null) {
+            mPlayButton.setTag("STOPPED");
+
+            mSongTitle.setText(song.getTitle());
+            mArtist.setText(song.getArtist());
+
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(song.getFilePath());
+            byte[] picture = mmr.getEmbeddedPicture();
+            mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+
+            mSongProgressBar.setMax(mPlayerService.getDuration());
+            mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
+            mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int progress = seekBar.getProgress();
+                    mPlayerService.seekTo(progress);
+                    mSongProgress.setText(getTimeString(progress));
+                }
+            });
+
+            playButtonPressed(null);
+        } else {
+            Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
+        }
+    }
+
 }

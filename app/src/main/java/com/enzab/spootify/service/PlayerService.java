@@ -8,14 +8,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.util.Log;
+
+import com.enzab.spootify.model.Song;
+import com.enzab.spootify.service.interaction.OnCompletionViewListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.enzab.spootify.R;
-import com.enzab.spootify.model.Song;
 
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -28,6 +27,7 @@ public class PlayerService extends Service implements
     private Song mSong;
     private ArrayList<Song> mSongQueue;
     private int mSongPlayingPosition;
+    private OnCompletionViewListener mOnCompletionViewListener;
 
     public static PlayerService getInstance() {
         return mPlayerService;
@@ -50,19 +50,9 @@ public class PlayerService extends Service implements
     }
 
     public void setSongQueue(ArrayList<Song> songQueue) {
+        mSongPlayingPosition = 0;
         mSongQueue = songQueue;
-        mSong = songQueue.get(0);
-        if (mMediaPlayer.isPlaying())
-            mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        try {
-            mMediaPlayer.setDataSource(mSong.getFilePath());
-            mMediaPlayer.setOnPreparedListener(this); // TODO: test without setting the listener each time
-            mMediaPlayer.prepare();
-        } catch (IOException e) {
-            // SONG NOT FOUND
-            Log.e("MUSIC SERVICE", "Error setting data source", e);
-        }
+        setCurrentSongToMediaPlayer();
     }
 
     public void addToSongQueue(Song song) {
@@ -75,9 +65,27 @@ public class PlayerService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-//            mediaPlayer.seekTo(0);
-//            mPlayButton.setTag("PAUSED");
-//            mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
+        ++mSongPlayingPosition;
+        if (mSongPlayingPosition < mSongQueue.size()) {
+            setCurrentSongToMediaPlayer();
+            mOnCompletionViewListener.updateView(mSong);
+        } else {
+            mSongPlayingPosition = 0;
+        }
+    }
+
+    private void setCurrentSongToMediaPlayer() {
+        mSong = mSongQueue.get(mSongPlayingPosition);
+        if (mMediaPlayer.isPlaying())
+            mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        try {
+            mMediaPlayer.setDataSource(mSong.getFilePath());
+            mMediaPlayer.prepare();
+        } catch (IOException e) {
+            // SONG NOT FOUND
+            Log.e("MUSIC SERVICE", "Error setting data source", e);
+        }
     }
 
     @Override
@@ -136,6 +144,10 @@ public class PlayerService extends Service implements
 
     public boolean isPlaying() {
         return mMediaPlayer.isPlaying();
+    }
+
+    public void setOnCompletionViewListener(OnCompletionViewListener onCompletionViewListener) {
+        this.mOnCompletionViewListener = onCompletionViewListener;
     }
 
     public class MusicBinder extends Binder {

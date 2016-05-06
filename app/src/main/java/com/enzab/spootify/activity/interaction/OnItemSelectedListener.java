@@ -2,7 +2,6 @@ package com.enzab.spootify.activity.interaction;
 
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
-import com.enzab.spootify.model.Song;
 
 import java.util.ArrayList;
 
@@ -13,4 +12,5 @@ public interface OnItemSelectedListener {
 
     public void onMusicSelected(ArrayList<ISearchItem> songQueue, int songPosition);
     public void onPlaylistSelected(Playlist searchItem);
+
 }
