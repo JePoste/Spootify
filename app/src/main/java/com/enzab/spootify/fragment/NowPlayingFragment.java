@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.enzab.spootify.R;
+import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
 import com.orm.util.Collection;
@@ -75,7 +76,7 @@ public class NowPlayingFragment extends Fragment {
      * @param songQueue Parameter 1.
      * @return A new instance of fragment SearchFragment.
      */
-    public static NowPlayingFragment newInstance(ArrayList<Song> songQueue) {
+    public static NowPlayingFragment newInstance(ArrayList<ISearchItem> songQueue) {
         NowPlayingFragment fragment = new NowPlayingFragment();
         Bundle args = new Bundle();
         args.putSerializable(SONG_QUEUE, songQueue);

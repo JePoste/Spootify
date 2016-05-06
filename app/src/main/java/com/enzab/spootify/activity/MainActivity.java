@@ -20,26 +20,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.enzab.spootify.R;
-import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
+import com.enzab.spootify.activity.interaction.OnItemSelectedListener;
 import com.enzab.spootify.fragment.AlbumFragment;
 import com.enzab.spootify.fragment.NowPlayingFragment;
+import com.enzab.spootify.fragment.PlaylistEditionFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
+import com.enzab.spootify.model.ISearchItem;
+import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
 import com.orm.SugarContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import org.apache.commons.lang3.text.WordUtils;
 
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMusicSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnItemSelectedListener {
 
     private static final String TAG = "MAIN_ACTIVITY";
     private static final int REQUEST_READWRITE_STORAGE = 1;
+
     private PlayerService mPlayerService;
     private Intent mPlayIntent;
     private boolean mIsBoundToPlayerService = false;
@@ -49,34 +53,20 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        SugarContext.init(this);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new SearchFragment()).commit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-//        SugarContext.init(this);
-////        List<Song> musics = (List<Song>) Song.find(Song.class, "artist=?", "Toto");
-//        List<Song> musics = Song.listAll(Song.class);
-//        for (Song music : musics) {
-//            Log.v(TAG, music.getTitle() + " " + music.getArtist());
-//        }
         requestPermissionToUser();
     }
 
@@ -154,11 +144,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
+        String title = "Spootify";
 
         if (id == R.id.nav_search) {
             fragment = new SearchFragment();
+            title = "Search";
         } else if (id == R.id.nav_playlists) {
             fragment = new PlaylistFragment();
+            title = "Playlists";
         } else if (id == R.id.nav_albums) {
             fragment = new AlbumFragment();
         } else if (id == R.id.nav_now_playing) {
@@ -168,19 +161,28 @@ public class MainActivity extends AppCompatActivity
         }
         if (fragment != null)
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+        getSupportActionBar().setTitle(title);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
-    public void onMusicSelected(ArrayList<Song> songList, int songPosition) {
+    public void onMusicSelected(ArrayList<ISearchItem> songList, int songPosition) {
         if (songList.size() > 1)
             Collections.rotate(songList, -songPosition);
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(songList);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
 //        mPlayerService.setSong(songList.get(1)); // put song path here
+    }
+
+    @Override
+    public void onPlaylistSelected(Playlist searchItem) {
+        Fragment fragment;
+        fragment = PlaylistEditionFragment.newInstance(searchItem);
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+        getSupportActionBar().setTitle(WordUtils.capitalize(searchItem.getName()));
     }
 
 }
