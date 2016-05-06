@@ -4,12 +4,18 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
-import com.enzab.spootify.model.SearchItem;
+import com.enzab.spootify.model.ISearchItem;
 
+import org.apache.commons.lang3.text.WordUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,18 +23,28 @@ import java.util.List;
  */
 public class SearchListAdapter extends BaseAdapter {
 
+    public interface IProcessItemOptionSelection {
+        void onItemOptionSelection(ISearchItem item, String option);
+        String[] getOptionList();
+    }
+
     private static class ViewHolder {
         TextView title;
         TextView description;
+        ImageButton options;
     }
 
+    private final IProcessItemOptionSelection callBack;
     private Context context;
     private LayoutInflater inflater;
-    private List<SearchItem> items;
+    private List<ISearchItem> items;
+    private final List<ISearchItem> itemsCopy;
 
-    public SearchListAdapter(Context context, List<SearchItem> items) {
+    public SearchListAdapter(Context context, List<ISearchItem> items, IProcessItemOptionSelection callback) {
         this.context = context;
         this.items = items;
+        this.itemsCopy = new ArrayList<>(items);
+        this.callBack = callback;
         inflater = LayoutInflater.from(this.context);
     }
 
@@ -55,19 +71,58 @@ public class SearchListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.title = (TextView) convertView.findViewById(R.id.title);
             viewHolder.description = (TextView) convertView.findViewById(R.id.description);
+            viewHolder.options = (ImageButton) convertView.findViewById(R.id.options);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        SearchItem item = items.get(position);
-        viewHolder.title.setText(item.getTitle());
-        viewHolder.description.setText(item.getDescription());
+        final ISearchItem item = items.get(position);
+        viewHolder.title.setText(WordUtils.capitalize(item.getTitle()));
+        viewHolder.description.setText(WordUtils.capitalize(item.getDescription()));
+        viewHolder.options.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(context)
+                        .autoDismiss(true)
+                        .adapter(new ArrayAdapter(context, android.R.layout.simple_list_item_1, callBack.getOptionList()),
+                                new MaterialDialog.ListCallback() {
+                                    @Override
+                                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                        callBack.onItemOptionSelection(item, text.toString());
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .show();
+            }
+        });
         return convertView;
     }
 
-    public void addItem(SearchItem item) {
-        items.add(item);
+    public void filter(String filter) {
+        items.clear();
+        if (filter.isEmpty()) {
+            items.addAll(itemsCopy);
+        } else {
+            for (ISearchItem it : itemsCopy) {
+                if (it.getTitle().contains(filter.toLowerCase())) {
+                    items.add(it);
+                }
+            }
+        }
         notifyDataSetChanged();
     }
+
+    public void addItem(ISearchItem item) {
+        items.add(item);
+        itemsCopy.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void deleteItem(ISearchItem item) {
+        items.remove(item);
+        itemsCopy.remove(item);
+        notifyDataSetChanged();
+    }
+
 }

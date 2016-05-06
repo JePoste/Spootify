@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants"
     android:paddingBottom="@dimen/list_item_padding_bottom"
     android:paddingEnd="@dimen/list_item_padding_right"
     android:paddingStart="@dimen/list_item_padding_left"
@@ -25,12 +26,15 @@
         android:layout_below="@+id/title"
         android:layout_alignParentStart="true" />
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
+        android:background="@null"
         android:src="@mipmap/ic_more_vert_white_36dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:contentDescription="@null" />
 
 </RelativeLayout>

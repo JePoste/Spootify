@@ -1,5 +1,6 @@
 package com.enzab.spootify.fragment;
 
+import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.SearchItem;
 
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ import java.util.List;
 public class AlbumFragment extends SearchFragment {
 
     @Override
-    protected List<SearchItem> getItemList() {
-        List<SearchItem> searchItems = new ArrayList<>();
+    protected List<ISearchItem> getItemList() {
+        List<ISearchItem> searchItems = new ArrayList<>();
         searchItems.add(new SearchItem("Prelude", "Richard Strauss"));
         searchItems.add(new SearchItem("Jurrassic park (the album)", "John Williams"));
         return searchItems;
