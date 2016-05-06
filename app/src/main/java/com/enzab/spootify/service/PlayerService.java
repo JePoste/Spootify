@@ -1,6 +1,11 @@
 package com.enzab.spootify.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -17,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import com.enzab.spootify.R;
+import com.enzab.spootify.activity.MainActivity;
 
 public class PlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -171,15 +178,63 @@ public class PlayerService extends Service implements
 
     @Override
     public boolean onUnbind(Intent intent) {
-//        if(mMediaPlayer != null) {
-//            if(mMediaPlayer.isPlaying())
-//                mMediaPlayer.stop();
-//            mMediaPlayer.reset();
-//            mMediaPlayer.release();
-//            mMediaPlayer = null;
-//        }
+        if (isPlaying())
+            startNotification();
         return false;
     }
+
+    private void startNotification() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Intent playIntent = new Intent(this, notificationPlayButtonListener.class);
+        PendingIntent pendingPlayIntent = PendingIntent.getBroadcast(this, 0, playIntent, 0);
+        Notification.Action playAction = new Notification.Action(R.mipmap.ic_pause_circle_outline_white_48dp, "", pendingPlayIntent);
+
+        Intent previousIntent = new Intent(this, notificationPreviousButtonListener.class);
+        PendingIntent pendingPreviousIntent = PendingIntent.getBroadcast(this, 0, previousIntent, 0);
+        Notification.Action previousAction = new Notification.Action(R.mipmap.ic_skip_previous_white_36dp, "", pendingPreviousIntent);
+
+        Intent nextIntent = new Intent(this, notificationNextButtonListener.class);
+        PendingIntent pendingNextIntent = PendingIntent.getBroadcast(this, 0, nextIntent, 0);
+        Notification.Action nextAction = new Notification.Action(R.mipmap.ic_skip_next_white_36dp, "", pendingNextIntent);
+
+        Notification notification = new Notification.Builder(this)
+                .setSmallIcon(R.mipmap.ic_shuffle_white_36dp)
+                .setContentTitle(mSong.getTitle())
+                .setContentText(mSong.getArtist())
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(pendingNotificationIntent)
+                .addAction(previousAction)
+                .addAction(playAction)
+                .addAction(nextAction)
+                .setAutoCancel(true)
+                .build();
+        notificationManager.notify(1, notification);
+    }
+
+    public static class notificationPlayButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mPlayerService.pauseSong();
+        }
+    }
+
+    public static class notificationPreviousButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+        }
+    }
+
+    public static class notificationNextButtonListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("Here", "I am in next");
+        }
+    }
+
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {

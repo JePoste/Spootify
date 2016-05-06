@@ -47,6 +47,9 @@
 
     <!--PlaylistEdition options-->
     <string name="delete_from_playlist">Delete from playlist</string>
+    <string name="pause">Pause</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
     <string-array name="playlist_edition_options">
         <item>@string/add_to_playlist</item>
         <item>@string/delete_from_playlist</item>
