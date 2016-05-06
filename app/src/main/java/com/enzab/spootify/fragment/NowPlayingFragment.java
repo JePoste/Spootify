@@ -2,10 +2,12 @@ package com.enzab.spootify.fragment;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,14 +39,8 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     ImageView mOptionButton;
     @Bind(R.id.play_button)
     ImageView mPlayButton;
-    @Bind(R.id.previous_button)
-    ImageView mPreviousButton;
-    @Bind(R.id.next_button)
-    ImageView mNextButton;
     @Bind(R.id.shuffle_button)
     ImageView mShuffleButton;
-    @Bind(R.id.repeat_button)
-    ImageView mRepeatButton;
     @Bind(R.id.song_title)
     TextView mSongTitle;
     @Bind(R.id.artist)
@@ -210,6 +206,20 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     @OnClick(R.id.previous_button)
     void onPreviousButtonClicked(View view) {
         mPlayerService.previous();
+    }
+
+    @OnClick(R.id.repeat_button)
+    void onRepeatButtonClicked(View view) {
+        ImageView img = (ImageView) view;
+        if ("REPEAT".equals(view.getTag())) {
+            view.setTag("NORMAL");
+            mPlayerService.setRepeatMode(false);
+            img.setColorFilter(null);
+        } else {
+            view.setTag("REPEAT");
+            img.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.MULTIPLY);
+            mPlayerService.setRepeatMode(true);
+        }
     }
 
 }

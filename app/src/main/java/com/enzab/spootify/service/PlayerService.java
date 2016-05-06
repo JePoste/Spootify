@@ -28,6 +28,7 @@ public class PlayerService extends Service implements
     private ArrayList<Song> mSongQueue;
     private int mSongPlayingPosition;
     private OnCompletionViewListener mOnCompletionViewListener;
+    private boolean mRepeatMode = false;
 
     public static PlayerService getInstance() {
         return mPlayerService;
@@ -52,6 +53,10 @@ public class PlayerService extends Service implements
         }
         setCurrentSongToMediaPlayer();
         mOnCompletionViewListener.updateView(mSong);
+    }
+
+    public void setRepeatMode(boolean repeatMode) {
+        this.mRepeatMode = repeatMode;
     }
 
     public void previous() {
@@ -91,7 +96,8 @@ public class PlayerService extends Service implements
             mSongPlayingPosition = 0;
             setCurrentSongToMediaPlayer();
             mOnCompletionViewListener.updateView(mSong);
-            mOnCompletionViewListener.pause();
+            if (!mRepeatMode)
+                mOnCompletionViewListener.pause();
         }
     }
 
