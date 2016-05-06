@@ -27,6 +27,7 @@ import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.model.SongPlaylist;
+import com.enzab.spootify.service.PlayerService;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -162,6 +163,8 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
     public void onItemOptionSelection(final ISearchItem item, String option) {
         if (mContext.getString(R.string.add_to_playlist).equals(option)) {
             addToPlaylist((Song)item);
+        } else if (getResources().getString(R.string.add_to_queue).equals(option)) {
+            PlayerService.getInstance().addToSongQueue((Song) item);
         }
     }
 

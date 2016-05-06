@@ -28,13 +28,13 @@ import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
-import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
 import com.orm.SugarContext;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import org.apache.commons.lang3.text.WordUtils;
 
 import butterknife.ButterKnife;
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         SugarContext.init(this);
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new NowPlayingFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new SearchFragment()).commit();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -111,14 +111,12 @@ public class MainActivity extends AppCompatActivity
         SugarContext.terminate();
     }
 
-    // connect to the service
     private ServiceConnection mMusicConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
             mPlayerService = binder.getService();
             PlayerService.initialize(binder);
-//            mPlayerService.setList(songList); // PASS SONG LIST HERE
             mIsBoundToPlayerService = true;
         }
 
