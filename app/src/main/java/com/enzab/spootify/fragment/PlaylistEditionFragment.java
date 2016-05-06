@@ -56,7 +56,7 @@ public class PlaylistEditionFragment extends SearchFragment {
 
     @Override
     protected List<ISearchItem> getItemList() {
-        List<ISearchItem> list = new ArrayList<>();
+        ArrayList<ISearchItem> list = new ArrayList<>();
         for (Song song : mPlaylist.getSongs()) {
             list.add(song);
         }

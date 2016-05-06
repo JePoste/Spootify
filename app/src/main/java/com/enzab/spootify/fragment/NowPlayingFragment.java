@@ -15,10 +15,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.enzab.spootify.R;
+import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
+import com.orm.util.Collection;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,7 +60,7 @@ public class NowPlayingFragment extends Fragment {
     SeekBar mSongProgressBar;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String MUSIC_ITEM = "music_item";
+    private static final String SONG_QUEUE = "song_queue";
 
     private static final String TAG = "NOW_PLAYING_FRAGMENT";
     private Context mContext;
@@ -68,13 +73,13 @@ public class NowPlayingFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param musicItem Parameter 1.
+     * @param songQueue Parameter 1.
      * @return A new instance of fragment SearchFragment.
      */
-    public static NowPlayingFragment newInstance(Song musicItem) {
+    public static NowPlayingFragment newInstance(ArrayList<ISearchItem> songQueue) {
         NowPlayingFragment fragment = new NowPlayingFragment();
         Bundle args = new Bundle();
-        args.putSerializable(MUSIC_ITEM, musicItem);
+        args.putSerializable(SONG_QUEUE, songQueue);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,13 +93,11 @@ public class NowPlayingFragment extends Fragment {
 
         mPlayerService = PlayerService.getInstance();
         if (getArguments() != null) {
-            Song selectedSong;
-            selectedSong = (Song) getArguments().getSerializable(MUSIC_ITEM);
-            if (selectedSong != null)
-                mPlayerService.setSong(selectedSong);
-        } else {
-            if (mPlayerService.isPlaying())
-                return; // re-bind le service à la vue
+            ArrayList<Song> songQueue;
+            songQueue = (ArrayList<Song>) getArguments().getSerializable(SONG_QUEUE);
+            if (songQueue != null && songQueue.size() > 0) {
+                mPlayerService.setSongQueue(songQueue);
+            }
         }
     }
 

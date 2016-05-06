@@ -71,7 +71,7 @@ public class PlaylistFragment extends SearchFragment {
     @Override
     protected List<ISearchItem> getItemList() {
         List<Playlist> playlists = Playlist.listAll(Playlist.class);
-        List<ISearchItem> searchItems = new ArrayList<>();
+        ArrayList<ISearchItem> searchItems = new ArrayList<>();
         for (Playlist playlist : playlists) {
             searchItems.add(playlist);
         }

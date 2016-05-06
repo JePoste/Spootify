@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
     @Bind(R.id.search_layout)
     FrameLayout mSearchLayout;
 
-    protected List<ISearchItem> mItems;
+    protected ArrayList<ISearchItem> mItems;
     protected SearchListAdapter mAdapter;
 
     public SearchFragment() {
@@ -104,7 +104,7 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
     void onItemClick(int position) {
         try {
             OnItemSelectedListener activity = (OnItemSelectedListener) mContext;
-            activity.onMusicSelected((Song) mItems.get(position));
+            activity.onMusicSelected(mItems, position);
         } catch (ClassCastException e) {
             throw new ClassCastException(mContext.toString() + " must implement OnItemSelectedListener");
         }

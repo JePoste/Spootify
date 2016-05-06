@@ -26,12 +26,15 @@ import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistEditionFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
+import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.Song;
 import com.enzab.spootify.service.PlayerService;
 import com.orm.SugarContext;
 
 import org.apache.commons.lang3.text.WordUtils;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import butterknife.ButterKnife;
 
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // connect to the service
-    private ServiceConnection mMusicConnection = new ServiceConnection(){
+    private ServiceConnection mMusicConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
@@ -165,11 +168,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMusicSelected(Song searchItem) {
+    public void onMusicSelected(ArrayList<ISearchItem> songList, int songPosition) {
+        if (songList.size() > 1)
+            Collections.rotate(songList, -songPosition);
         Fragment fragment;
-        fragment = NowPlayingFragment.newInstance(searchItem);
+        fragment = NowPlayingFragment.newInstance(songList);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
-        mPlayerService.setSong(searchItem); // put song path here
+//        mPlayerService.setSong(songList.get(1)); // put song path here
     }
 
     @Override

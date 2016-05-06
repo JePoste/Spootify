@@ -23,10 +23,11 @@ public class PlayerService extends Service implements
         MediaPlayer.OnCompletionListener {
 
     private MediaPlayer mMediaPlayer;
-    private ArrayList<Song> mSongList;
-    private Song mSong;
     private final IBinder mMusicBinder = new MusicBinder();
     private static PlayerService mPlayerService;
+    private Song mSong;
+    private ArrayList<Song> mSongQueue;
+    private int mSongPlayingPosition;
 
     public static PlayerService getInstance() {
         return mPlayerService;
@@ -48,8 +49,9 @@ public class PlayerService extends Service implements
         mMediaPlayer.seekTo(time);
     }
 
-    public void setSong(Song song) {
-        mSong = song;
+    public void setSongQueue(ArrayList<Song> songQueue) {
+        mSongQueue = songQueue;
+        mSong = songQueue.get(0);
         if (mMediaPlayer.isPlaying())
             mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -61,6 +63,10 @@ public class PlayerService extends Service implements
             // SONG NOT FOUND
             Log.e("MUSIC SERVICE", "Error setting data source", e);
         }
+    }
+
+    public void addToSongQueue(Song song) {
+        mSongQueue.add(song);
     }
 
     @Override
@@ -79,6 +85,8 @@ public class PlayerService extends Service implements
         super.onCreate();
 
         mSong = null;
+        mSongQueue = null;
+        mSongPlayingPosition = 0;
         mMediaPlayer = new MediaPlayer();
         initMediaPlayer();
     }
@@ -128,10 +136,6 @@ public class PlayerService extends Service implements
 
     public boolean isPlaying() {
         return mMediaPlayer.isPlaying();
-    }
-
-    public void setList(ArrayList<Song> songs) {
-        mSongList = songs;
     }
 
     public class MusicBinder extends Binder {
