@@ -8,5 +8,6 @@ import com.enzab.spootify.model.Song;
 public interface OnCompletionViewListener {
 
     void updateView(Song song);
+    void pause();
 
 }

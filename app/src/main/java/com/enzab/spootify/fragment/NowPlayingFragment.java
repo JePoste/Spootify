@@ -112,14 +112,14 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     }
 
     @OnClick(R.id.play_button)
-    public void playButtonPressed(View view) {
+    public void onPlayButtonClicked(View view) {
         if (mPlayButton.getTag().equals("PLAYING")) {
             mPlayerService.pauseSong();
             mRefreshSongProgressTimerTask.cancel();
             mRefreshTimer.purge();
             mPlayButton.setTag("PAUSED");
             mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
-        } else if (mPlayButton.getTag().equals("PAUSED") || mPlayButton.getTag().equals("STOPPED")) {
+        } else if (mPlayButton.getTag().equals("PAUSED")) {
             mPlayerService.playSong();
             mRefreshSongProgressTimerTask = new TimerTask() {
                 @Override
@@ -162,7 +162,7 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     @Override
     public void updateView(Song song) {
         if (song != null) {
-            mPlayButton.setTag("STOPPED");
+            mPlayButton.setTag("PAUSED");
 
             mSongTitle.setText(song.getTitle());
             mArtist.setText(song.getArtist());
@@ -191,10 +191,25 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
                 }
             });
 
-            playButtonPressed(null);
+            onPlayButtonClicked(null);
         } else {
             Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
         }
+    }
+
+    @Override
+    public void pause() {
+        onPlayButtonClicked(null);
+    }
+
+    @OnClick(R.id.next_button)
+    void onNextButtonClicked(View view) {
+        mPlayerService.next();
+    }
+
+    @OnClick(R.id.previous_button)
+    void onPreviousButtonClicked(View view) {
+        mPlayerService.previous();
     }
 
 }

@@ -45,6 +45,24 @@ public class PlayerService extends Service implements
         mMediaPlayer.start();
     }
 
+    public void next() {
+        ++mSongPlayingPosition;
+        if (mSongPlayingPosition >= mSongQueue.size()) {
+            mSongPlayingPosition = 0;
+        }
+        setCurrentSongToMediaPlayer();
+        mOnCompletionViewListener.updateView(mSong);
+    }
+
+    public void previous() {
+        --mSongPlayingPosition;
+        if (mSongPlayingPosition < 0) {
+            mSongPlayingPosition = mSongQueue.size() - 1;
+        }
+        setCurrentSongToMediaPlayer();
+        mOnCompletionViewListener.updateView(mSong);
+    }
+
     public void seekTo(int time) {
         mMediaPlayer.seekTo(time);
     }
@@ -71,6 +89,9 @@ public class PlayerService extends Service implements
             mOnCompletionViewListener.updateView(mSong);
         } else {
             mSongPlayingPosition = 0;
+            setCurrentSongToMediaPlayer();
+            mOnCompletionViewListener.updateView(mSong);
+            mOnCompletionViewListener.pause();
         }
     }
 
