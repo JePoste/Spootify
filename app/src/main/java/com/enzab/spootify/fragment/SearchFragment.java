@@ -140,7 +140,7 @@ public class SearchFragment extends Fragment {
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             Song song;
             for (File file : fileList) {
-                if (!file.isDirectory()) {
+                if (!file.isDirectory() && file.getPath().substring(file.getPath().lastIndexOf('.') + 1).equals("mp3")) {
                     mmr.setDataSource(file.getPath());
                     song = new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
                             mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST),

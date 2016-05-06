@@ -1,8 +1,13 @@
 package com.enzab.spootify.activity;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -20,8 +25,8 @@ import com.enzab.spootify.fragment.AlbumFragment;
 import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
 import com.enzab.spootify.fragment.SearchFragment;
-import com.enzab.spootify.model.SearchItem;
 import com.enzab.spootify.model.Song;
+import com.enzab.spootify.service.PlayerService;
 import com.orm.SugarContext;
 
 import butterknife.ButterKnife;
@@ -32,10 +37,9 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MAIN_ACTIVITY";
     private static final int REQUEST_READWRITE_STORAGE = 1;
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+    private PlayerService mPlayerService;
+    private Intent mPlayIntent;
+    private boolean mIsBoundToPlayerService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +99,43 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (mPlayIntent == null) {
+            mPlayIntent = new Intent(this, PlayerService.class);
+            startService(mPlayIntent);
+            bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+//        stopService(mPlayIntent);
+        unbindService(mMusicConnection);
+        mPlayerService = null;
+        super.onDestroy();
+        SugarContext.terminate();
+    }
+
+    // connect to the service
+    private ServiceConnection mMusicConnection = new ServiceConnection(){
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
+            mPlayerService = binder.getService();
+            PlayerService.initialize(binder);
+//            mPlayerService.setList(songList); // PASS SONG LIST HERE
+            mIsBoundToPlayerService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsBoundToPlayerService = false;
+        }
+    };
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -134,5 +175,7 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment;
         fragment = NowPlayingFragment.newInstance(searchItem);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
+        mPlayerService.setSong(searchItem); // put song path here
     }
+
 }
