@@ -2,14 +2,12 @@ package com.enzab.spootify.fragment;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.enzab.spootify.R;
-import com.enzab.spootify.activity.interaction.OnMusicSelectedListener;
+import com.enzab.spootify.activity.interaction.OnItemSelectedListener;
 import com.enzab.spootify.model.ISearchItem;
 import com.enzab.spootify.model.Playlist;
 import com.enzab.spootify.model.SearchItem;
@@ -39,10 +37,10 @@ public class PlaylistFragment extends SearchFragment {
     @OnItemClick(R.id.list)
     void onItemClick(int position) {
         try {
-            OnMusicSelectedListener activity = (OnMusicSelectedListener) mContext;
+            OnItemSelectedListener activity = (OnItemSelectedListener) mContext;
             activity.onPlaylistSelected((Playlist) mItems.get(position));
         } catch (ClassCastException e) {
-            throw new ClassCastException(mContext.toString() + " must implement OnMusicSelectedListener");
+            throw new ClassCastException(mContext.toString() + " must implement OnItemSelectedListener");
         }
     }
 
