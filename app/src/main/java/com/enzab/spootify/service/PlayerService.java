@@ -61,6 +61,8 @@ public class PlayerService extends Service implements
     }
 
     public void next() {
+        if (mSongQueue == null)
+            return;
         ++mSongPlayingPosition;
         if (mSongPlayingPosition >= mSongQueue.size()) {
             mSongPlayingPosition = 0;
@@ -79,6 +81,8 @@ public class PlayerService extends Service implements
 
     public void setShuffleMode(boolean shuffleMode) {
         this.mShuffleMode = shuffleMode;
+        if (mSongQueue == null)
+            return;
         if (shuffleMode) {
             mShuffleSongQueue = new ArrayList<>(mSongQueue);
             mShuffleSongQueue.remove(mSongPlayingPosition);
@@ -87,7 +91,7 @@ public class PlayerService extends Service implements
             mTmpSongPlayingPosition = mSongPlayingPosition;
             mSongPlayingPosition = 0;
         } else {
-            mSongPlayingPosition = mTmpSongPlayingPosition;
+            mSongPlayingPosition = mSongQueue.indexOf(mSong);
         }
     }
 
@@ -96,6 +100,8 @@ public class PlayerService extends Service implements
     }
 
     public void previous() {
+        if (mSongQueue == null)
+            return;
         --mSongPlayingPosition;
         if (mSongPlayingPosition < 0) {
             mSongPlayingPosition = mSongQueue.size() - 1;
@@ -111,6 +117,7 @@ public class PlayerService extends Service implements
     public void setSongQueue(ArrayList<Song> songQueue) {
         mSongPlayingPosition = 0;
         mSongQueue = songQueue;
+        mShuffleSongQueue = new ArrayList<>(mSongQueue);
         setCurrentSongToMediaPlayer();
     }
 

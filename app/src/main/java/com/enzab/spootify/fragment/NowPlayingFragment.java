@@ -113,13 +113,13 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
 
     @OnClick(R.id.play_button)
     public void onPlayButtonClicked(View view) {
-        if (mPlayButton.getTag().equals("PLAYING")) {
+        if ("PLAYING".equals(mPlayButton.getTag())) {
             mPlayerService.pauseSong();
             mRefreshSongProgressTimerTask.cancel();
             mRefreshTimer.purge();
             mPlayButton.setTag("PAUSED");
             mPlayButton.setImageResource(R.mipmap.ic_play_circle_outline_white_48dp);
-        } else if (mPlayButton.getTag().equals("PAUSED")) {
+        } else if ("PAUSED".equals(mPlayButton.getTag())) {
             mPlayerService.playSong();
             mRefreshSongProgressTimerTask = new TimerTask() {
                 @Override
@@ -155,8 +155,10 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     public void onDetach() {
         super.onDetach();
         this.mContext = null;
-        mRefreshSongProgressTimerTask.cancel();
-        mRefreshTimer.purge();
+        if (mRefreshSongProgressTimerTask != null && mRefreshTimer != null) {
+            mRefreshSongProgressTimerTask.cancel();
+            mRefreshTimer.purge();
+        }
     }
 
     @Override
