@@ -105,10 +105,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-//        stopService(mPlayIntent);
+    protected void onResume() {
+        super.onResume();
+
+        if (mPlayIntent == null) {
+            mPlayIntent = new Intent(this, PlayerService.class);
+            bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         unbindService(mMusicConnection);
         mPlayerService = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+//        stopService(mPlayIntent);
         super.onDestroy();
         SugarContext.terminate();
     }
@@ -152,12 +167,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_playlists) {
             fragment = new PlaylistFragment();
             title = "Playlists";
-        } else if (id == R.id.nav_albums) {
-            fragment = new AlbumFragment();
         } else if (id == R.id.nav_now_playing) {
             fragment = new NowPlayingFragment();
-        } else if (id == R.id.nav_settings) {
-
         }
         if (fragment != null)
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();

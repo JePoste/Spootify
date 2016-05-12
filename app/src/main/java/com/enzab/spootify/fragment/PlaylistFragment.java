@@ -53,7 +53,7 @@ public class PlaylistFragment extends SearchFragment {
                 .input(R.string.dialog_create_playlist_content, R.string.empty, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-                        Playlist playlist = new Playlist(input.toString().toLowerCase().trim());
+                        Playlist playlist = new Playlist(WordUtils.capitalize(input.toString().toLowerCase()).trim());
                         if (Playlist.find(Playlist.class, "name = ?", playlist.getName()).isEmpty()) {
                             playlist.save();
                             mAdapter.addItem(new Playlist(playlist.getName()));

@@ -45,7 +45,7 @@ public class Playlist extends SugarRecord implements Serializable, ISearchItem {
 
     @Override
     public String getDescription() {
-        return String.valueOf(getSongs().size());
+        return String.valueOf(getSongs().size()) + " song(s)";
     }
 
 }

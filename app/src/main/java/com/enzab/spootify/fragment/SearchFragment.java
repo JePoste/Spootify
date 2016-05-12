@@ -146,8 +146,8 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
                     if (!songs.isEmpty()) {
                         song = songs.get(0);
                     } else {
-                        song = new Song(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toLowerCase().trim(),
-                                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toLowerCase().trim(),
+                        song = new Song(WordUtils.capitalize(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE).toLowerCase()).trim(),
+                                WordUtils.capitalize(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toLowerCase()).trim(),
                                 file.getPath());
                         song.save();
                     }

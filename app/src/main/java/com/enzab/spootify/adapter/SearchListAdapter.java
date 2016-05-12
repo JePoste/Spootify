@@ -105,7 +105,7 @@ public class SearchListAdapter extends BaseAdapter {
             items.addAll(itemsCopy);
         } else {
             for (ISearchItem it : itemsCopy) {
-                if (it.getTitle().contains(filter.toLowerCase())) {
+                if (it.getTitle().toLowerCase().contains(filter.toLowerCase())) {
                     items.add(it);
                 }
             }

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.MainActivity;
 
@@ -41,6 +42,7 @@ public class PlayerService extends Service implements
     private OnCompletionViewListener mOnCompletionViewListener;
     private boolean mRepeatMode = false;
     private boolean mShuffleMode = false;
+    private int mNotificationId;
 
     public static PlayerService getInstance() {
         return mPlayerService;
@@ -85,7 +87,7 @@ public class PlayerService extends Service implements
             mTmpSongPlayingPosition = mSongPlayingPosition;
             mSongPlayingPosition = 0;
         } else {
-            mSongPlayingPosition = mTmpSongPlayingPosition ;
+            mSongPlayingPosition = mTmpSongPlayingPosition;
         }
     }
 
@@ -113,7 +115,8 @@ public class PlayerService extends Service implements
     }
 
     public void addToSongQueue(Song song) {
-        mSongQueue.add(song);
+        if (mSongQueue != null)
+            mSongQueue.add(song);
     }
 
     @Override
@@ -159,6 +162,7 @@ public class PlayerService extends Service implements
         mSongQueue = null;
         mSongPlayingPosition = 0;
         mMediaPlayer = new MediaPlayer();
+        mNotificationId = 0;
         initMediaPlayer();
     }
 
@@ -173,11 +177,15 @@ public class PlayerService extends Service implements
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(mNotificationId);
+        Log.d("DEBUG", "in onBind !");
         return mMusicBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
+        Log.d("DEBUG", "in onUnbind !");
         if (isPlaying())
             startNotification();
         return false;
@@ -203,38 +211,41 @@ public class PlayerService extends Service implements
 
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_shuffle_white_36dp)
-                .setContentTitle(mSong.getTitle())
-                .setContentText(mSong.getArtist())
+                .setContentTitle("Now playing...")
+                .setContentText("on Spootify")
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingNotificationIntent)
                 .addAction(previousAction)
                 .addAction(playAction)
                 .addAction(nextAction)
-                .setAutoCancel(true)
+//                .setAutoCancel(true)
                 .build();
-        notificationManager.notify(1, notification);
+        notificationManager.notify(++mNotificationId, notification);
     }
 
     public static class notificationPlayButtonListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mPlayerService.pauseSong();
+            if (mPlayerService.isPlaying())
+                mPlayerService.pauseSong();
+            else
+                mPlayerService.playSong();
         }
     }
 
     public static class notificationPreviousButtonListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mPlayerService.previous();
         }
     }
 
     public static class notificationNextButtonListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("Here", "I am in next");
+            mPlayerService.next();
         }
     }
-
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
