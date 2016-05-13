@@ -56,7 +56,7 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     @Bind(R.id.song_progress_bar)
     SeekBar mSongProgressBar;
 
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // the fragment initialization parameters
     private static final String SONG_QUEUE = "song_queue";
 
     private static final String TAG = "NOW_PLAYING_FRAGMENT";
@@ -66,13 +66,6 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
     private TimerTask mRefreshSongProgressTimerTask;
     private PlayerService mPlayerService;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param songQueue Parameter 1.
-     * @return A new instance of fragment SearchFragment.
-     */
     public static NowPlayingFragment newInstance(ArrayList<ISearchItem> songQueue) {
         NowPlayingFragment fragment = new NowPlayingFragment();
         Bundle args = new Bundle();

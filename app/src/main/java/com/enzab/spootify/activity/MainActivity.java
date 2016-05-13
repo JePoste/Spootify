@@ -1,7 +1,6 @@
 package com.enzab.spootify.activity;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +17,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.enzab.spootify.R;
 import com.enzab.spootify.activity.interaction.OnItemSelectedListener;
-import com.enzab.spootify.fragment.AlbumFragment;
 import com.enzab.spootify.fragment.NowPlayingFragment;
 import com.enzab.spootify.fragment.PlaylistEditionFragment;
 import com.enzab.spootify.fragment.PlaylistFragment;
@@ -53,6 +50,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         SugarContext.init(this);
@@ -71,6 +69,66 @@ public class MainActivity extends AppCompatActivity
 
         requestPermissionToUser();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!mIsBoundToPlayerService) {
+            mPlayIntent = new Intent(this, PlayerService.class);
+            startService(mPlayIntent);
+            bindService(mPlayIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+            mIsBoundToPlayerService = true;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mIsBoundToPlayerService) {
+            unbindService(mServiceConnection);
+            mIsBoundToPlayerService = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SugarContext.terminate();
+        if (isFinishing()) {
+            stopService(mPlayIntent);
+        }
+    }
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
+            mPlayerService = binder.getService();
+            PlayerService.initialize(binder);
+            mIsBoundToPlayerService = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mIsBoundToPlayerService = false;
+        }
+    };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -94,62 +152,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (mPlayIntent == null) {
-            mPlayIntent = new Intent(this, PlayerService.class);
-            startService(mPlayIntent);
-            bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mPlayIntent == null) {
-            mPlayIntent = new Intent(this, PlayerService.class);
-            bindService(mPlayIntent, mMusicConnection, Context.BIND_AUTO_CREATE);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unbindService(mMusicConnection);
-        mPlayerService = null;
-    }
-
-    @Override
-    protected void onDestroy() {
-//        stopService(mPlayIntent);
-        super.onDestroy();
-        SugarContext.terminate();
-    }
-
-    private ServiceConnection mMusicConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            PlayerService.MusicBinder binder = (PlayerService.MusicBinder) service;
-            mPlayerService = binder.getService();
-            PlayerService.initialize(binder);
-            mIsBoundToPlayerService = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            mIsBoundToPlayerService = false;
-        }
-    };
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            moveTaskToBack(true);
         }
     }
 
@@ -186,7 +194,6 @@ public class MainActivity extends AppCompatActivity
         fragment = NowPlayingFragment.newInstance(songList);
         getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, fragment).commit();
         getSupportActionBar().setTitle(WordUtils.capitalize("Spootify"));
-//        mPlayerService.setSong(songList.get(1)); // put song path here
     }
 
     @Override
