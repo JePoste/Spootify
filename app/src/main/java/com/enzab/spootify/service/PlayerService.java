@@ -124,6 +124,7 @@ public class PlayerService extends Service implements
     public void addToSongQueue(Song song) {
         if (mSongQueue != null)
             mSongQueue.add(song);
+            mShuffleSongQueue.add(song);
     }
 
     @Override
