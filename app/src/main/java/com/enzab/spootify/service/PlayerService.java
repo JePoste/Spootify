@@ -185,21 +185,24 @@ public class PlayerService extends Service implements
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(mNotificationId);
-        Log.d("DEBUG", "in onBind !");
         return mMusicBinder;
     }
 
     @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d("DEBUG", "in onUnbind !");
-        if (isPlaying())
-            startNotification();
-        return false;
+    public void onRebind(Intent intent) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(mNotificationId);
     }
 
-    private void startNotification() {
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if (isPlaying())
+            startNotification();
+        return true;
+    }
+
+    public void startNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -207,7 +210,7 @@ public class PlayerService extends Service implements
 
         Intent playIntent = new Intent(this, notificationPlayButtonListener.class);
         PendingIntent pendingPlayIntent = PendingIntent.getBroadcast(this, 0, playIntent, 0);
-        Notification.Action playAction = new Notification.Action(R.mipmap.ic_pause_circle_outline_white_48dp, "", pendingPlayIntent);
+        Notification.Action playAction = new Notification.Action(0, "Play/Pause", pendingPlayIntent);
 
         Intent previousIntent = new Intent(this, notificationPreviousButtonListener.class);
         PendingIntent pendingPreviousIntent = PendingIntent.getBroadcast(this, 0, previousIntent, 0);
@@ -223,11 +226,13 @@ public class PlayerService extends Service implements
                 .setContentText("on Spootify")
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingNotificationIntent)
+                .setPriority(Notification.PRIORITY_MAX)
                 .addAction(previousAction)
                 .addAction(playAction)
                 .addAction(nextAction)
 //                .setAutoCancel(true)
                 .build();
+        notification.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         notificationManager.notify(++mNotificationId, notification);
     }
 
