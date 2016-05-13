@@ -135,7 +135,7 @@ public class SearchFragment extends Fragment implements SearchListAdapter.IProce
     }
 
     protected List<ISearchItem> getItemList() {
-        File[] fileList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).listFiles();
+        File[] fileList = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).listFiles();
         if (fileList != null) {
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             Song song;
