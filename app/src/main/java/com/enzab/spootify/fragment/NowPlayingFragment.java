@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,31 +188,37 @@ public class NowPlayingFragment extends Fragment implements OnCompletionViewList
             }
 
             MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-            mmr.setDataSource(song.getFilePath());
-            byte[] picture = mmr.getEmbeddedPicture();
-            if (picture != null)
-                mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
-            else
-                Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
+            try {
+                mmr.setDataSource(song.getFilePath());
+                byte[] picture = mmr.getEmbeddedPicture();
+                if (picture != null)
+                    mAlbumCover.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+                else
+                    Picasso.with(mContext).load(R.drawable.default_cover).noFade().into(mAlbumCover);
 
-            mSongProgressBar.setMax(mPlayerService.getDuration());
-            mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
-            mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                }
+                mSongProgressBar.setMax(mPlayerService.getDuration());
+                mSongDuration.setText(getTimeString(mPlayerService.getDuration()));
+                mSongProgressBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                }
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    int progress = seekBar.getProgress();
-                    mPlayerService.seekTo(progress);
-                    mSongProgress.setText(getTimeString(progress));
-                }
-            });
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        int progress = seekBar.getProgress();
+                        mPlayerService.seekTo(progress);
+                        mSongProgress.setText(getTimeString(progress));
+                    }
+                });
+
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Error setting data source", e);
+                return ;
+            }
 
             onPlayButtonClicked(null);
         } else {
